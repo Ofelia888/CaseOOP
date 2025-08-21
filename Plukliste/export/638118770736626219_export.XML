@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Pluklist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<PluckList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Jens Thomsen</Name>
-  <Forsendelse>GLS</Forsendelse>
-  <Adresse>Nyborgvej 43, 5600 Faaborg</Adresse>
+  <Shipment>GLS</Shipment>
+  <Address>Nyborgvej 43, 5600 Faaborg</Address>
   <Lines>
     <Item>
       <ProductID>TX-302587</ProductID>
@@ -29,4 +29,4 @@
       <Amount>1</Amount>
     </Item>
   </Lines>
-</Pluklist>
+</PluckList>

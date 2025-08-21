@@ -1,9 +1,9 @@
-﻿namespace Plukliste;
-public class Pluklist
+﻿namespace PluckList;
+public class PluckList
 {
     public string? Name;
-    public string? Forsendelse;
-    public string? Adresse;
+    public string? Shipment;
+    public string? Address;
     public List<Item> Lines = new List<Item>();
     public void AddItem(Item item) { Lines.Add(item); }
 }
