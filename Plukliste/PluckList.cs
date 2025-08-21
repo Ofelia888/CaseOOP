@@ -1,13 +1,13 @@
 ﻿namespace Plukliste;
 
 // The pluklist class containing a list, identifier properties and a method for adding items to the list
-public class Pluklist
+public class PluckList
 {
     public string Name { get; set; }
     public string Shipment { get; set; }
     public string Address { get; set; }
     public List<Item> Lines { get; set; }
-    public Pluklist(string name, string shipment, string address)
+    public PluckList(string name, string shipment, string address)
     {
         Name = name;
         Shipment = shipment;
