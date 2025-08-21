@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PluckList
 {
-    internal interface IPrint
+    public interface IPrint
     {
+        void Print(string text);
     }
 }

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace PluckList
 {
-    internal class MoveFile
+    public class FileMover
     {
+        public void Move(string filePath, string targetPath)
+        {
+
+        }
     }
 }

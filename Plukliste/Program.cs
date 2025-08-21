@@ -1,28 +1,22 @@
-﻿//Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
+﻿using System.Xml.Serialization;
+//Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
 namespace PluckList;
 
 class Program
 {
     static void Main()
     {
+        FileReader fileReader = new FileReader("C:\\Users\\HFGF\\Source\\Repos\\CaseOOP\\PlukListe\\export\\");
+        List<string> files = fileReader.ReadDirectory();
+
+        ColorHandle colorHandle = new ColorHandle();
+
+        OptionPrinter optionPrinter = new OptionPrinter();
+        
         char readKey = ' ';
-        List<string> files;
         int index = -1;
-        ConsoleColor standardColor = Console.ForegroundColor;
-        string filePath = "C:\\Users\\HFGF\\Source\\Repos\\CaseOOP\\PlukListe\\export\\";
 
-        Directory.CreateDirectory("import");
-
-        // Find directory
-        if (!Directory.Exists(filePath))
-        {
-            Console.WriteLine("Directory \"export\" not found");
-            Console.ReadLine();
-            return;
-        }
-
-        // Files in directory to list
-        files = Directory.EnumerateFiles(filePath).ToList();
+        
 
         // Program loop
         while (readKey != 'Q')
@@ -42,14 +36,7 @@ class Program
                 Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
                 Console.WriteLine($"\nFil: {files[index]}");
 
-                // Read file
-                FileStream file = File.OpenRead(files[index]);
-
-                // Serializes objects from xml file
-                System.Xml.Serialization.XmlSerializer xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(PluckList));
-
-                // Deserializes xml objects as plucklist properties
-                PluckList pluckList = (PluckList?)xmlSerializer.Deserialize(file);
+                PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileReader.ReadSingle(index));
 
                 // Prints properties from plucklist
                 if (pluckList != null && pluckList.Lines != null)
@@ -64,40 +51,23 @@ class Program
                         Console.WriteLine("{0,-7}{1,-9}{2,-20}{3}", item.Amount, item.Type, item.ProductID, item.Title);
                     }
                 }
-                file.Close();
             }
 
             //Print options
-            Console.WriteLine("\n\nOptions:");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("Q");
-            Console.ForegroundColor = standardColor;
-            Console.WriteLine("uit");
+            optionPrinter.Print("Quit");
             if (index >= 0)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("A");
-                Console.ForegroundColor = standardColor;
-                Console.WriteLine("fslut plukseddel");
+                optionPrinter.Print("Afslut plukseddel");
             }
             if (index > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("F");
-                Console.ForegroundColor = standardColor;
-                Console.WriteLine("orrige plukseddel");
+                optionPrinter.Print("Forrige plukseddel");
             }
             if (index < files.Count - 1)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("N");
-                Console.ForegroundColor = standardColor;
-                Console.WriteLine("æste plukseddel");
+                optionPrinter.Print("Næste plukseddel");
             }
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("G");
-            Console.ForegroundColor = standardColor;
-            Console.WriteLine("enindlæs pluksedler");
+            optionPrinter.Print("Genindlæs plukseddel");
 
             // Takes input
             readKey = Console.ReadKey().KeyChar;
@@ -108,12 +78,12 @@ class Program
             Console.Clear();
 
             // Handles input
-            Console.ForegroundColor = ConsoleColor.Red; //status in red
+            colorHandle.Handle(ColorContext.Status);
             switch (readKey)
             {
                 case 'G':
                     // Refresh file contents
-                    files = Directory.EnumerateFiles(filePath).ToList();
+                    files = fileReader.ReadDirectory();
                     index = -1;
                     Console.WriteLine("PlukLister genindlæst");
                     break;
@@ -133,6 +103,8 @@ class Program
                     break;
                 case 'A':
                     //Move files to import directory
+                    Directory.CreateDirectory("import");
+
                     string fileWithoutPath = files[index].Substring(files[index].LastIndexOf('\\'));
                     File.Move(files[index], string.Format(@"import\\{0}", fileWithoutPath));
 
@@ -146,7 +118,8 @@ class Program
 
                     break;
             }
-            Console.ForegroundColor = standardColor; //reset color
+
+            colorHandle.Handle(ColorContext.Standard);
 
         }
     }

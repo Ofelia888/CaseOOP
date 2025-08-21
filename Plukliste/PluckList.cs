@@ -1,24 +1,18 @@
 ﻿namespace PluckList;
 public class PluckList
 {
-    public string? Name;
-    public string? Shipment;
-    public string? Address;
+
+
+    public string Name { get; set; }
+    public string Shipment { get; set; }
+    public string Address { get; set; }
     public List<Item> Lines = new List<Item>();
-    public void AddItem(Item item) { Lines.Add(item); }
-}
 
-public class Item
-{
-    public string ProductID;
-    public string Title;
-    public ItemType Type;
-    public int Amount;
-}
 
-public enum ItemType
-{
-    Fysisk, Print
+    //public void AddItem(Item item)
+    //{
+    //    Lines.Add(item);
+    //}
 }
 
 
