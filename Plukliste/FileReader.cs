@@ -7,8 +7,6 @@ namespace PluckList
     public class FileReader
     {
         public string Path { get; set; }
-        public List<string> FilesInDirectory { get; set; }
-        public FileStream File { get; set; }
 
         public FileReader(string path)
         {
@@ -19,21 +17,21 @@ namespace PluckList
         {
             if (Directory.Exists(Path))
             {
-                return FilesInDirectory = Directory.EnumerateFiles(Path).ToList();
+                return Directory.EnumerateFiles(Path).ToList();
             }
 
             return null;
         }
-        public FileStream ReadSingle(int fileIndex)
+        public FileStream ReadSingle(int fileIndex, List<string> filesInDirectory)
         {
-            return System.IO.File.OpenRead(FilesInDirectory[fileIndex]);
+            return System.IO.File.OpenRead(filesInDirectory[fileIndex]);
         }
 
         public T SerializeXmlTo<T>(FileStream file)
         {
             // Serializes from xml item to given type object
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
-            T type = (T?)xmlSerializer.Deserialize(File);
+            T type = (T?)xmlSerializer.Deserialize(file);
 
             return type;
         }

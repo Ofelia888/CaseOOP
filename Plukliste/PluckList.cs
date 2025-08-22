@@ -1,8 +1,6 @@
 ﻿namespace PluckList;
 public class PluckList
 {
-
-
     public string Name { get; set; }
     public string Shipment { get; set; }
     public string Address { get; set; }

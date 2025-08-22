@@ -15,19 +15,20 @@ namespace PluckList
     }
     public class ColorHandle
     {
-        public virtual ConsoleColor Handle(ColorContext context)
+        public virtual void Handle(ColorContext context)
         {
             switch (context)
             {
                 case ColorContext.Standard:
-                    return ConsoleColor.Black;
+                     Console.ForegroundColor = ConsoleColor.Gray;
+                    break;
                 case ColorContext.Option:
-                    return ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
                 case ColorContext.Status:
-                    return ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
             }
-
-            return ConsoleColor.Black;
         }
     }
 }

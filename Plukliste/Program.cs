@@ -11,11 +11,11 @@ class Program
 
         ColorHandle colorHandle = new ColorHandle();
 
+        PluckListPrinter pluckListPrinter;
         OptionPrinter optionPrinter = new OptionPrinter();
         
         char readKey = ' ';
         int index = -1;
-
         
 
         // Program loop
@@ -36,24 +36,18 @@ class Program
                 Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
                 Console.WriteLine($"\nFil: {files[index]}");
 
-                PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileReader.ReadSingle(index));
+                // Serializes xml contents to plucklist
+                PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileReader.ReadSingle(index, files));
 
                 // Prints properties from plucklist
-                if (pluckList != null && pluckList.Lines != null)
-                {
-                    Console.WriteLine("\n{0, -13}{1}", "Navn:", pluckList.Name);
-                    Console.WriteLine("{0, -13}{1}", "Forsendelse:", pluckList.Shipment);
-                    #warning TODO: Add address to screen print
+                pluckListPrinter = new PluckListPrinter(pluckList);
 
-                    Console.WriteLine("\n{0,-7}{1,-9}{2,-20}{3}", "Antal", "Type", "Produktnr.", "Navn");
-                    foreach (Item item in pluckList.Lines)
-                    {
-                        Console.WriteLine("{0,-7}{1,-9}{2,-20}{3}", item.Amount, item.Type, item.ProductID, item.Title);
-                    }
-                }
+                pluckListPrinter.Print();
+                pluckListPrinter.PrintItems();
             }
 
             //Print options
+            Console.WriteLine("\n\nOptions:");
             optionPrinter.Print("Quit");
             if (index >= 0)
             {
@@ -71,11 +65,7 @@ class Program
 
             // Takes input
             readKey = Console.ReadKey().KeyChar;
-            if (readKey >= 'a')
-            {
-                readKey = char.ToUpper(readKey);
-            }
-            Console.Clear();
+            readKey = char.ToUpper(readKey);
 
             // Handles input
             colorHandle.Handle(ColorContext.Status);
