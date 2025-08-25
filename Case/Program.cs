@@ -80,7 +80,7 @@ class Program
                     files = fileReader.ReadDirectory();
                     if (files == null)
                     {
-                        Console.WriteLine("Der er ingen filer fundet på den valgte Directory");
+                        Console.WriteLine("Der er ingen filer fundet på den valgte Mappe");
                         return;
                     }
                     index = -1;
