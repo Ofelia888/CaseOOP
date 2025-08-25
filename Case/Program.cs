@@ -81,6 +81,11 @@ class Program
                 case 'G':
                     // Refresh file contents
                     files = fileReader.ReadDirectory();
+                    if (files == null)
+                    {
+                        Console.WriteLine("Der er ingen filer fundet på den valgte Mappe");
+                        return;
+                    }
                     fileMover = new FileMover(files);
                     index = -1;
                     Console.WriteLine("PlukLister genindlæst");
