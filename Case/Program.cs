@@ -25,7 +25,7 @@ class Program
         // Program loop
         while (readKey != 'Q')
         {
-            if (files?.Count == 0)
+            if (files.Count == 0)
             {
                 Console.WriteLine("No files found.");
             }
@@ -37,8 +37,8 @@ class Program
                 }
 
                 // Prints file info
-                Console.WriteLine($"PlukListe {index + 1} af {files?.Count}");
-                Console.WriteLine($"\nFil: {files?[index]}");
+                Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
+                Console.WriteLine($"\nFil: {files[index]}");
 
                 // Serializes xml contents to plucklist
                 PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileReader.ReadSingle(index, files));
@@ -78,6 +78,11 @@ class Program
                 case 'G':
                     // Refresh file contents
                     files = fileReader.ReadDirectory();
+                    if (files == null)
+                    {
+                        Console.WriteLine("Der er ingen filer fundet på den valgte Directory");
+                        return;
+                    }
                     index = -1;
                     Console.WriteLine("PlukLister genindlæst");
                     break;
