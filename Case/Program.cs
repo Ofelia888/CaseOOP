@@ -1,4 +1,4 @@
-﻿using System.Xml.Serialization;
+﻿
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
 namespace PluckList;
 
@@ -13,6 +13,8 @@ class Program
             Console.WriteLine("There's no files at the selected directory");
             return;
         }
+        FileMover fileMover = new FileMover(files);
+
         ColorHandle colorHandle = new ColorHandle();
 
         PluckListPrinter pluckListPrinter;
@@ -41,7 +43,8 @@ class Program
                 Console.WriteLine($"\nFil: {files[index]}");
 
                 // Serializes xml contents to plucklist
-                PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileReader.ReadSingle(index, files));
+                using var fileStream = fileReader.ReadSingle(index, files);
+                PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileStream);
 
                 // Prints properties from plucklist
                 pluckListPrinter = new PluckListPrinter(pluckList);
@@ -78,6 +81,7 @@ class Program
                 case 'G':
                     // Refresh file contents
                     files = fileReader.ReadDirectory();
+                    fileMover = new FileMover(files);
                     index = -1;
                     Console.WriteLine("PlukLister genindlæst");
                     break;
@@ -97,19 +101,11 @@ class Program
                     break;
                 case 'A':
                     //Move files to import directory
-                    Directory.CreateDirectory("import");
-
-                    string fileWithoutPath = files[index].Substring(files[index].LastIndexOf('\\'));
-                    File.Move(files[index], string.Format(@"import\\{0}", fileWithoutPath));
-
-                    Console.WriteLine($"Plukseddel {files[index]} afsluttet.");
-                    files.Remove(files[index]);
-                    
+                    fileMover.Move(index);
                     if (index == files.Count)
                     {
                         index--;
                     }
-
                     break;
             }
 

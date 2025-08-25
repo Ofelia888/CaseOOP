@@ -1,16 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PluckList
+﻿namespace PluckList
 {
     public class FileMover
     {
-        public void Move(string filePath, string targetPath)
+        private readonly List<string> _files;
+        
+        public FileMover(List<string> files)
         {
+            _files = files;
+        }
+        
+        public void Move(int index)
+        {
+            Directory.CreateDirectory("import");
 
+            var fileName = Path.GetFileName(_files[0]);
+            File.Move(_files[index], string.Format(@"import\\{0}", fileName), true);
+
+            Console.WriteLine($"Plukseddel {_files[index]} afsluttet.");
+            _files.Remove(_files[index]);
         }
     }
 }
