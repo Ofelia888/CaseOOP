@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-        FileReader fileReader = new FileReader("C:\\Users\\HFGF\\Source\\Repos\\CaseOOP\\PlukListe\\export\\");
+        FileReader fileReader = new FileReader("export");
         List<string> files = fileReader.ReadDirectory();
 
         ColorHandle colorHandle = new ColorHandle();
