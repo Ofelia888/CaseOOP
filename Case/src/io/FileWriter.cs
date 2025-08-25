@@ -1,4 +1,4 @@
-﻿namespace PluckList;
+﻿namespace PluckList.src.io;
 
 public class FileWriter : IContentWriter
 {

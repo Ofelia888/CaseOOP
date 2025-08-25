@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace PluckList;
+namespace PluckList.src;
 public class PluckList
 {
     public string? Name { get; set; }
