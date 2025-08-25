@@ -31,6 +31,24 @@ public partial class HTMLTemplate
             (contents, variable) => contents.Replace($"[{variable}]", variables[variable]));
     }
 
+    public void Write(string filePath, PluckList pluckList)
+    {
+        var printItem = pluckList.GetPrintItem();
+        if (printItem == null) throw new ArgumentException("No print item found");
+
+        var vars = new Dictionary<string, string>
+        {
+            { "Name", pluckList.Name! },
+            { "Adresse", pluckList.Address! },
+            {
+                "Plukliste",
+                string.Join($"<br>{Environment.NewLine}",
+                    pluckList.Lines.Select(item => $"{item.Title} (x{item.Amount})"))
+            },
+        };
+        File.WriteAllText(filePath, GetContents(vars));
+    }
+
     public static HTMLTemplate? Load(string path)
     {
         if (!File.Exists(path)) return null;
