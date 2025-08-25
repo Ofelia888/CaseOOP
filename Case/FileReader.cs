@@ -13,7 +13,7 @@ namespace PluckList
             Path = path;
         }
 
-        public List<string> ReadDirectory()
+        public List<string>? ReadDirectory()
         {
             if (Directory.Exists(Path))
             {

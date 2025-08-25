@@ -7,8 +7,12 @@ class Program
     static void Main()
     {
         FileReader fileReader = new FileReader("export");
-        List<string> files = fileReader.ReadDirectory();
-
+        List<string>? files = fileReader.ReadDirectory();
+        if (files == null)
+        {
+            Console.WriteLine("There's no files at the selected directory");
+            return;
+        }
         ColorHandle colorHandle = new ColorHandle();
 
         PluckListPrinter pluckListPrinter;
