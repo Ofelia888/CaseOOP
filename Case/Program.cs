@@ -1,5 +1,7 @@
 ﻿
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
+
+using System.Diagnostics;
 using PluckList.Printer;
 
 namespace PluckList;
@@ -24,6 +26,7 @@ class Program
         
         char readKey = ' ';
         int index = -1;
+        PluckList? pluckList = null;
         
 
         // Program loop
@@ -46,7 +49,7 @@ class Program
 
                 // Serializes xml contents to plucklist
                 using var fileStream = fileReader.ReadSingle(index, files);
-                PluckList pluckList = fileReader.SerializeXmlTo<PluckList>(fileStream);
+                pluckList = fileReader.SerializeXmlTo<PluckList>(fileStream);
 
                 // Prints properties from plucklist
                 pluckListPrinter = new PluckListPrinter(pluckList);
@@ -71,6 +74,7 @@ class Program
                 optionPrinter.Print("Næste plukseddel");
             }
             optionPrinter.Print("Genindlæs plukseddel");
+            optionPrinter.Print("Åbn i browser");
 
             // Takes input
             readKey = Console.ReadKey().KeyChar;
@@ -114,6 +118,23 @@ class Program
                     {
                         index--;
                     }
+                    break;
+                case 'Å':
+                    var printItem = pluckList?.Lines.FirstOrDefault(item => item.Type == ItemType.Print);
+                    if (pluckList == null || printItem == null) break;
+                    var vars = new Dictionary<string, string>();
+                    vars.Add("Name", pluckList.Name!);
+                    vars.Add("Adresse", pluckList.Address!);
+                    vars.Add("Plukliste",
+                        string.Join($"<br>{Environment.NewLine}", pluckList.Lines.Select(item => $"{item.Title} (x{item.Amount})")));
+                    var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.html");
+                    var templatePath = Path.Combine("templates", $"{printItem.ProductID}.html");
+                    File.WriteAllText(filePath, HTMLTemplate.Load(templatePath)?.GetContents(vars) ?? string.Empty);
+                    var info = new ProcessStartInfo(filePath)
+                    {
+                        UseShellExecute = true
+                    };
+                    Process.Start(info);
                     break;
             }
 
