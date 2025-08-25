@@ -11,17 +11,4 @@ namespace PluckList
     {
         public abstract void Print(string text);
     }
-
-    //public class FileInfoPrinter : ConsolePrinter
-    //{
-    //    public FileReader FileReader { get; set; }
-    //    public FileInfoPrinter(FileReader fileReader)
-    //    {
-    //        FileReader = fileReader;
-    //    }
-    //    public override void Print(string text)
-    //    {
-
-    //    }
-    //}
 }
