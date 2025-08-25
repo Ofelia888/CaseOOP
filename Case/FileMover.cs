@@ -14,20 +14,23 @@ namespace PluckList
         public void Move(int index)
         {
             Directory.CreateDirectory("print");
-            var htmlName = Path.Combine("print", $"{Directory.GetFiles("print").Length + 1}.html");
-            var html = Path.Combine("templates", "PRINT-WELCOME.html");
-            
             var fileStream = File.OpenRead(_files[index]);
             var xmlSerializer = new XmlSerializer(typeof(PluckList));
             var pluckList = (PluckList?)xmlSerializer.Deserialize(fileStream);
             fileStream.Close();
 
+            var printItem = pluckList?.Lines.FirstOrDefault(item => item.Type == ItemType.Print);
+            if (pluckList == null || printItem == null) return;
+            
+            var htmlPath = Path.Combine("print", $"{Directory.GetFiles("print").Length + 1}.html");
+            var templatePath = Path.Combine("templates", $"{printItem.ProductID}.html");
+
             var vars = new Dictionary<string, string>();
-            vars.Add("Name", pluckList.Name);
-            vars.Add("Adresse", pluckList.Address);
+            vars.Add("Name", pluckList.Name!);
+            vars.Add("Adresse", pluckList.Address!);
             vars.Add("Plukliste",
                 string.Join($"<br>{Environment.NewLine}", pluckList.Lines.Select(item => $"{item.Title} (x{item.Amount})")));
-            File.WriteAllText(htmlName, HTMLTemplate.Load(html)?.GetContents(vars) ?? string.Empty);
+            File.WriteAllText(htmlPath, HTMLTemplate.Load(templatePath)?.GetContents(vars) ?? string.Empty);
             
             Directory.CreateDirectory("import");
 
