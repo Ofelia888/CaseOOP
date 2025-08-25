@@ -31,9 +31,9 @@ namespace PluckList
         {
             // Serializes from xml item to given type object
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
-            T type = (T?)xmlSerializer.Deserialize(file);
+            T? type = (T?)xmlSerializer.Deserialize(file);
 
-            return type;
+            return type!;
         }
 
 

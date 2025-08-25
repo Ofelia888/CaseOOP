@@ -8,12 +8,12 @@ namespace PluckList
 {
     public enum ItemType
     {
-        Fysisk, Print
+        Physical, Print
     }
     public class Item
     {
-        public string ProductID;
-        public string Title;
+        public string? ProductID;
+        public string? Title;
         public ItemType Type;
         public int Amount;
     }
