@@ -1,5 +1,7 @@
 ﻿
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
+using PluckList.Printer;
+
 namespace PluckList;
 
 class Program
@@ -73,6 +75,7 @@ class Program
             // Takes input
             readKey = Console.ReadKey().KeyChar;
             readKey = char.ToUpper(readKey);
+            Console.Clear();
 
             // Handles input
             colorHandle.Handle(ColorContext.Status);
