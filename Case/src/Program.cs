@@ -115,7 +115,10 @@ class Program
                         index--;
                     }
                     storage.RemoveItems(pluckList);
-                    new StorageStatusPrinter(storage).Print();
+                    foreach (string status in storage.StorageStatus())
+                    {
+                        Console.WriteLine(status);
+                    }
                     break;
                 case 'Å':
                     var printItem = pluckList?.Lines.FirstOrDefault(item => item.Type == ItemType.Print);
