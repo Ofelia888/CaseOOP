@@ -11,6 +11,8 @@
         
         public void Move(int index)
         {
+            if (index < 0 || index >= _files.Count) return;
+            
             // HTML templates
             Directory.CreateDirectory("print");
             
