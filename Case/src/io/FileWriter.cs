@@ -9,9 +9,9 @@ public class FileWriter : IContentWriter
         FilePath = filePath;
     }
     
-    public virtual void Write(string content)
+    public virtual void Write<T>(T content)
     {
-        File.WriteAllText(FilePath, content);
+        File.WriteAllText(FilePath, content?.ToString() ?? string.Empty);
     }
 
     public virtual void Write<T>(IEnumerable<T> content)

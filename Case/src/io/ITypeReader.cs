@@ -2,5 +2,5 @@
 
 public interface ITypeReader
 {
-    List<T?> ReadList<T>() where T : class;
+    T? Read<T>() where T : class;
 }
