@@ -34,26 +34,22 @@ class Program
             if (files.Count == 0)
             {
                 Console.WriteLine("No files found.");
+                break;
             }
-            else
-            {
-                if (index == -1)
-                {
-                    index = 0;
-                }
+            if (index == -1) index = 0;
 
-                // Prints file info
-                Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
-                Console.WriteLine($"\nFil: {files[index]}");
+            // Prints file info
+            Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
+            Console.WriteLine($"\nFil: {files[index]}");
 
-                // Serializes xml contents to plucklist
-                pluckList = PluckList.Deserialize(files[index]);
+            // Serializes xml contents to plucklist
+            pluckList = PluckList.Deserialize(files[index]);
+            if (pluckList == null) break;
 
-                // Prints properties from plucklist
+            // Prints properties from plucklist
 
-                new PluckListPrinter(pluckList).Print();
-                new ItemPrinter(pluckList).Print();
-            }
+            new PluckListPrinter(pluckList).Print();
+            new ItemPrinter(pluckList).Print();
 
             storage.SetItems(pluckList);
 
