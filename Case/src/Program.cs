@@ -25,9 +25,6 @@ class Program
         FileMover fileMover = new FileMover(files);
 
         ColorHandle colorHandle = new ColorHandle();
-
-        PluckListPrinter pluckListPrinter;
-        OptionPrinter optionPrinter = new OptionPrinter();
         
         char readKey = ' ';
         int index = -1;
@@ -58,15 +55,15 @@ class Program
                 pluckList = fileReader.SerializeXmlTo<PluckList>(fileStream);
 
                 // Prints properties from plucklist
-                pluckListPrinter = new PluckListPrinter(pluckList);
 
-                pluckListPrinter.Print();
-                pluckListPrinter.PrintItems();
+                new PluckListPrinter(pluckList).Print();
+                new ItemPrinter(pluckList).Print();
             }
 
             storage.SetItems(pluckList);
 
             //Print options
+            OptionPrinter optionPrinter = new OptionPrinter();
             Console.WriteLine("\n\nOptions:");
             optionPrinter.Print("Quit");
             if (index >= 0)

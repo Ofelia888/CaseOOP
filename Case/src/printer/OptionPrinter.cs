@@ -13,6 +13,7 @@ namespace PluckList.src.Printer
         {
             ColorHandle = new ColorHandle();
         }
+        // FIX: parameter text, find different solution to make Print() in IPrint parameterless
         public override void Print(string text)
         {
             char first = text.First();
