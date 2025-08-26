@@ -47,5 +47,14 @@ namespace PluckList.src
                 }
             }
         }
+        public List<string> StorageStatus()
+        {
+            List<string> statuses = new List<string>();
+            foreach (Item item in Items)
+            {
+                statuses.Add($"{item.Title}: {item.Total} på lager");
+            }
+            return statuses;
+        }
     }
 }

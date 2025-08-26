@@ -109,13 +109,20 @@ class Program
                     break;
                 case 'A':
                     //Move files to import directory
+                    if (index == -1)
+                    {
+                        break;
+                    }
                     fileMover.Move(index);
                     if (index == files.Count)
                     {
                         index--;
                     }
                     storage.RemoveItems(pluckList);
-                    new StorageStatusPrinter(storage).Print();
+                    foreach (string status in storage.StorageStatus())
+                    {
+                        Console.WriteLine(status);
+                    }
                     break;
                 case 'Å':
                     var printItem = pluckList?.Lines.FirstOrDefault(item => item.Type == ItemType.Print);
