@@ -26,7 +26,7 @@ namespace PluckList
         {
             return System.IO.File.OpenRead(filesInDirectory[fileIndex]);
         }
-
+        // FIX: thows exception here if all plucklists "afsluttes"
         public T SerializeXmlTo<T>(FileStream file)
         {
             // Serializes from xml item to given type object

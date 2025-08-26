@@ -9,6 +9,6 @@ namespace PluckList.src.Printer
 {
     public abstract class ConsolePrinter : IPrint
     {
-        public abstract void Print(string text);
+        public abstract void Print(string text = "default");
     }
 }

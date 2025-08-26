@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using PluckList.src.io;
+using PluckList.src.printer;
 using PluckList.src.Printer;
 
 namespace PluckList.src;
@@ -19,6 +20,7 @@ class Program
             return;
         }
         ItemScanner itemScanner = new ItemScanner();
+        StorageSystem storage = new StorageSystem();
 
         FileMover fileMover = new FileMover(files);
 
@@ -61,6 +63,8 @@ class Program
                 pluckListPrinter.Print();
                 pluckListPrinter.PrintItems();
             }
+
+            storage.SetItems(pluckList);
 
             //Print options
             Console.WriteLine("\n\nOptions:");
@@ -123,6 +127,8 @@ class Program
                     {
                         index--;
                     }
+                    storage.RemoveItems(pluckList);
+                    new StorageStatusPrinter(storage).Print();
                     break;
                 case 'Å':
                     var printItem = pluckList?.Lines.FirstOrDefault(item => item.Type == ItemType.Print);
