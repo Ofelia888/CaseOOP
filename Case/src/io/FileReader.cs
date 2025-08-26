@@ -11,6 +11,7 @@ public class FileReader : IContentReader
 
     public virtual List<string> ReadList()
     {
-        return File.ReadAllLines(FilePath).ToList();
+        if (Directory.Exists(FilePath)) return Directory.EnumerateFiles(FilePath).ToList();
+        return File.Exists(FilePath) ? File.ReadAllLines(FilePath).ToList() : new List<string>();
     }
 }

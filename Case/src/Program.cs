@@ -13,12 +13,8 @@ class Program
     static void Main()
     {
         FileReader fileReader = new FileReader("export");
-        List<string>? files = fileReader.ReadDirectory();
-        if (files == null)
-        {
-            Console.WriteLine("There's no files at the selected directory");
-            return;
-        }
+        List<string>? files = fileReader.ReadList();
+        
         ItemScanner itemScanner = new ItemScanner();
         StorageSystem storage = new StorageSystem();
 
@@ -51,8 +47,7 @@ class Program
                 Console.WriteLine($"\nFil: {files[index]}");
 
                 // Serializes xml contents to plucklist
-                using var fileStream = fileReader.ReadSingle(index, files);
-                pluckList = fileReader.SerializeXmlTo<PluckList>(fileStream);
+                pluckList = PluckList.Deserialize(files[index]);
 
                 // Prints properties from plucklist
 
@@ -93,12 +88,7 @@ class Program
             {
                 case 'G':
                     // Refresh file contents
-                    files = fileReader.ReadDirectory();
-                    if (files == null)
-                    {
-                        Console.WriteLine("Der er ingen filer fundet på den valgte Mappe");
-                        return;
-                    }
+                    files = fileReader.ReadList();
                     fileMover = new FileMover(files);
                     index = -1;
                     Console.WriteLine("PlukLister genindlæst");
