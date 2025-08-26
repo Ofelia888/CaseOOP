@@ -13,4 +13,9 @@ public class FileWriter : IContentWriter
     {
         File.WriteAllText(FilePath, content);
     }
+
+    public virtual void Write<T>(IEnumerable<T> content)
+    {
+        File.WriteAllLines(FilePath, content.Select(x => x?.ToString() ?? string.Empty));
+    }
 }

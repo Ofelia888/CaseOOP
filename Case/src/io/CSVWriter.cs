@@ -6,7 +6,7 @@ public class CSVWriter : FileWriter
     {
     }
 
-    public void Write<T>(IEnumerable<T> content)
+    public override void Write<T>(IEnumerable<T> content)
     {
         var fields = typeof(T).GetFields();
         var elements = content as T[] ?? content.ToArray();
