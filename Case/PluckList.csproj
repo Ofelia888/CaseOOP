@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+	<None Update="allPluckLists\**">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
     <None Update="pending\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

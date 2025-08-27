@@ -9,13 +9,37 @@ public class FileWriter : IContentWriter
         FilePath = filePath;
     }
     
-    public virtual void Write<T>(T content)
+    public virtual void Write<T>(T content, bool append)
     {
-        File.WriteAllText(FilePath, content?.ToString() ?? string.Empty);
+        if (append)
+        {
+            File.AppendAllText(FilePath, content?.ToString() ?? string.Empty);
+        }
+        else
+        {
+            File.WriteAllText(FilePath, content?.ToString() ?? string.Empty);
+        }
     }
 
-    public virtual void WriteAll<T>(IEnumerable<T> content)
+    public void Write<T>(T content)
     {
-        File.WriteAllLines(FilePath, content.Select(x => x?.ToString() ?? string.Empty));
+        Write(content, false);
+    }
+
+    public virtual void WriteAll<T>(IEnumerable<T> content, bool append)
+    {
+        if (append)
+        {
+            File.AppendAllLines(FilePath, content.Select(x => x?.ToString() ?? string.Empty));
+        }
+        else
+        {
+            File.WriteAllLines(FilePath, content.Select(x => x?.ToString() ?? string.Empty));
+        }
+    }
+
+    public void WriteAll<T>(IEnumerable<T> content)
+    {
+        WriteAll(content, false);
     }
 }
