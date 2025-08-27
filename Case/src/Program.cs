@@ -139,7 +139,7 @@ class Program
                     break;
                 case 'S':
                     scannedItems = itemScanner.ScanItems(pluckList);
-                    new CSVWriter(Path.Combine("export", "varer.csv")).Write(scannedItems);
+                    new CSVWriter(Path.Combine("export", "varer.csv")).WriteAll(scannedItems);
 
                     colorHandle.Handle(ColorContext.Status);
                     Console.WriteLine("Varer scannet til CSV fil");
