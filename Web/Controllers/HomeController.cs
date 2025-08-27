@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using PluckList;
 using Web.Models;
 
 namespace Web.Controllers;
@@ -15,6 +16,9 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        PluckList.src.io.CSVReader reader = new(Path.Combine("pending","varer.csv"));
+        var items = reader.ReadList<Item>(); 
+        ViewData["Items"] = items;
         return View();
     }
 
