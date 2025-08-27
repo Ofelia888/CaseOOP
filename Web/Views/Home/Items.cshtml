@@ -3,15 +3,22 @@
 <div>
     <h2>Items</h2>
     <hr/>
-    <h5>Title:</h5>
-    @foreach (var item in (List<Item>)@ViewData["Items"])
-    {
-        <p style="margin:0">@item.Title</p>
-    }
-    <p>-----------------------</p>
-    <h5 style="margin:0">ProductID:</h5>
-    @foreach (var item in (List<Item>)@ViewData["Items"])
-    {
-        <p style="margin:0">@item.ProductID</p>
-    }
+    
+    <table style="width:100%; border-collapse: collapse;" border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>ProductID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Item>)ViewData["Items"])
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.ProductID</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
