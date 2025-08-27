@@ -24,11 +24,11 @@
             var templatePath = Path.Combine("templates", $"{printItem.ProductID}.html");
             HTMLTemplate.Load(templatePath)?.Write(htmlPath, pluckList);
             
-            // Import
-            Directory.CreateDirectory("import");
+            // handled
+            Directory.CreateDirectory("handled");
 
             var fileName = Path.GetFileName(_files[index]);
-            File.Move(_files[index], string.Format(@"import\\{0}", fileName), true);
+            File.Move(_files[index], string.Format(@"handled\\{0}", fileName), true);
 
             Console.WriteLine($"Plukseddel {_files[index]} afsluttet.");
             _files.Remove(_files[index]);

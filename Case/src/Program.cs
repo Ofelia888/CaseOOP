@@ -12,7 +12,7 @@ class Program
 {
     static void Main()
     {
-        FileReader fileReader = new FileReader("export");
+        FileReader fileReader = new FileReader("pending");
         List<string>? files = fileReader.ReadList();
         
         ItemScanner itemScanner = new ItemScanner();
@@ -104,7 +104,7 @@ class Program
                     }
                     break;
                 case 'A':
-                    //Move files to import directory
+                    //Move files to handled directory
                     if (index == -1)
                     {
                         break;
@@ -139,7 +139,7 @@ class Program
                     break;
                 case 'S':
                     scannedItems = itemScanner.ScanItems(pluckList);
-                    new CSVWriter(Path.Combine("export", "varer.csv")).WriteAll(scannedItems);
+                    new CSVWriter(Path.Combine("pending", "varer.csv")).WriteAll(scannedItems);
 
                     colorHandle.Handle(ColorContext.Status);
                     Console.WriteLine("Varer scannet til CSV fil");
