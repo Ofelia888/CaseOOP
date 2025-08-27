@@ -13,8 +13,10 @@ namespace PluckList.src
     {
         public List<Item> ScanItems(PluckList pluckList)
         {
+            List<Item> scannable;
             List<Item> scannedItems = new List<Item>();
             OptionPrinter optionPrinter = new OptionPrinter();
+            ColorHandle color = new ColorHandle();
             char readKey = ' ';
 
             if (pluckList == null)
@@ -22,18 +24,21 @@ namespace PluckList.src
                 throw new NullReferenceException();
             }
 
-            foreach (Item item in pluckList.Lines)
+            scannable = pluckList.Lines.ToList();
+            while (scannable.Count() > 0)
             {
-                if (item.Title == null || item.Title.Length == 0)
+                for (int i = 0; i < scannable.Count(); i++)
                 {
-                    continue;
+                    Item item = scannable[i];
+                    if (item.Title == null || item.Title.Length == 0)
+                    {
+                        continue;
+                    }
+                    optionPrinter.Print(item.Title);
                 }
-                optionPrinter.Print(item.Title);
-            }
-            optionPrinter.Print("Færdig");
+                optionPrinter.Print("Færdig");
 
-            while (true)
-            {
+            
                 Console.WriteLine();
                 readKey = Console.ReadKey().KeyChar;
                 readKey = char.ToUpper(readKey);
@@ -44,15 +49,23 @@ namespace PluckList.src
                     return scannedItems;
                 }
 
-                foreach (Item item in pluckList.Lines)
+                Console.Clear();
+                for (int i = 0; i < scannable.Count(); i++)
                 {
+                    Item item = scannable[i];
                     if (readKey == item.Title?.First())
                     {
                         scannedItems.Add(item);
+                        scannable.Remove(item);
+                        
+                        color.Handle(ColorContext.Status);
                         Console.WriteLine($"\n{item.Title} scannet");
+                        color.Handle(ColorContext.Standard);
                     }
                 }
             }
+
+            return scannedItems;
         }
     }
 }
