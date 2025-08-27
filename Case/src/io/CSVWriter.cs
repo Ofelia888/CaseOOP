@@ -1,12 +1,12 @@
-﻿namespace PluckList;
+﻿namespace PluckList.src.io;
 
-public class CSVWriter<T> : FileWriter
+public class CSVWriter : FileWriter
 {
     public CSVWriter(string filePath) : base(filePath)
     {
     }
 
-    public void Write(IEnumerable<T> content)
+    public override void Write<T>(IEnumerable<T> content)
     {
         var fields = typeof(T).GetFields();
         var elements = content as T[] ?? content.ToArray();

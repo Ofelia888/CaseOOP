@@ -1,4 +1,4 @@
-﻿namespace PluckList;
+﻿namespace PluckList.src.io;
 
 public class FileWriter : IContentWriter
 {
@@ -12,5 +12,10 @@ public class FileWriter : IContentWriter
     public virtual void Write(string content)
     {
         File.WriteAllText(FilePath, content);
+    }
+
+    public virtual void Write<T>(IEnumerable<T> content)
+    {
+        File.WriteAllLines(FilePath, content.Select(x => x?.ToString() ?? string.Empty));
     }
 }

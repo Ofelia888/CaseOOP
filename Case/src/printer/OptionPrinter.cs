@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluckList.Printer
+namespace PluckList.src.Printer
 {
     public class OptionPrinter : ConsolePrinter
     {
@@ -15,8 +15,10 @@ namespace PluckList.Printer
         }
         public override void Print(string text)
         {
+            char first = text.First();
+
             ColorHandle.Handle(ColorContext.Option);
-            Console.Write(text.First());
+            Console.Write(first);
             ColorHandle.Handle(ColorContext.Standard);
             Console.WriteLine(text.Remove(0, 1));
         }

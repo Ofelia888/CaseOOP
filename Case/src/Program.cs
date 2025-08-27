@@ -2,9 +2,10 @@
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
 
 using System.Diagnostics;
-using PluckList.Printer;
+using PluckList.src.io;
+using PluckList.src.Printer;
 
-namespace PluckList;
+namespace PluckList.src;
 
 class Program
 {
@@ -17,6 +18,8 @@ class Program
             Console.WriteLine("There's no files at the selected directory");
             return;
         }
+        ItemScanner itemScanner = new ItemScanner();
+
         FileMover fileMover = new FileMover(files);
 
         ColorHandle colorHandle = new ColorHandle();
@@ -27,6 +30,7 @@ class Program
         char readKey = ' ';
         int index = -1;
         PluckList? pluckList = null;
+        List<Item> scannedItems;
         
 
         // Program loop
@@ -75,6 +79,7 @@ class Program
             }
             optionPrinter.Print("Genindlæs plukseddel");
             optionPrinter.Print("Åbn i browser");
+            optionPrinter.Print("Scan varer");
 
             // Takes input
             readKey = Console.ReadKey().KeyChar;
@@ -135,6 +140,13 @@ class Program
                         UseShellExecute = true
                     };
                     Process.Start(info);
+                    break;
+                case 'S':
+                    scannedItems = itemScanner.ScanItems(pluckList);
+                    new CSVWriter(Path.Combine("export", "varer.csv")).Write(scannedItems);
+
+                    colorHandle.Handle(ColorContext.Status);
+                    Console.WriteLine("Varer scannet til CSV fil");
                     break;
             }
 

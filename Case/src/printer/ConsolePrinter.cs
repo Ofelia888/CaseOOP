@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluckList.Printer
+namespace PluckList.src.Printer
 {
     public abstract class ConsolePrinter : IPrint
     {
