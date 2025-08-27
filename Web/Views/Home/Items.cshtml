@@ -1,0 +1,8 @@
+﻿@using PluckList
+
+<div>
+    @foreach (var item in (List<Item>)@ViewData["Items"])
+    {
+        <p>@item.Title</p>
+    }
+</div>

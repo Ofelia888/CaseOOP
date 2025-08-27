@@ -13,8 +13,12 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-
     public IActionResult Index()
+    {
+        return View();
+    }
+
+    public IActionResult Items()
     {
         PluckList.src.io.CSVReader reader = new(Path.Combine("pending","varer.csv"));
         var items = reader.ReadList<Item>(); 
