@@ -7,8 +7,8 @@ public class CSVWriter : FileWriter
     public CSVWriter(string filePath) : base(filePath)
     {
     }
-
-    private string[] GetValues<T>(IEnumerable<T> content, params FieldInfo[] fields)
+    
+    private static string[] GetValues<T>(IEnumerable<T> content, params FieldInfo[] fields)
     {
         var elements = content as T[] ?? content.ToArray();
         var contents = new string[elements.Length + 1];
@@ -19,6 +19,24 @@ public class CSVWriter : FileWriter
             contents[i + 1] = string.Join(",", fields.Select(field => field.GetValue(element)));
         }
         return contents;
+    }
+
+    public void Write<T>(T content, bool append, params string[] fields)
+    {
+        var selectedFields = typeof(T).GetFields().Where(field => fields.Contains(field.Name)).ToArray();
+        var contents = GetValues(new[] { content }, selectedFields);
+        if (append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
+        else File.WriteAllLines(FilePath, contents);
+    }
+
+    public void Write<T>(T content, params string[] fields)
+    {
+        Write(content, false, fields);
+    }
+
+    public override void Write<T>(T content, bool append)
+    {
+        Write(content, append, typeof(T).GetFields().Select(field => field.Name).ToArray());
     }
 
     public void WriteAll<T>(IEnumerable<T> content, bool append, params string[] fields)
