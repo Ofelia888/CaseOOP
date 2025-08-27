@@ -1,8 +1,17 @@
 ﻿@using PluckList
 
 <div>
+    <h2>Items</h2>
+    <hr/>
+    <h5>Title:</h5>
     @foreach (var item in (List<Item>)@ViewData["Items"])
     {
-        <p>@item.Title</p>
+        <p style="margin:0">@item.Title</p>
+    }
+    <p>-----------------------</p>
+    <h5 style="margin:0">ProductID:</h5>
+    @foreach (var item in (List<Item>)@ViewData["Items"])
+    {
+        <p style="margin:0">@item.ProductID</p>
     }
 </div>
