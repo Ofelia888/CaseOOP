@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PluckList.src.io;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,31 +11,11 @@ namespace PluckList.src
     {
         public List<Item> Items { get; }
         public List<Item> reservedItems = new List<Item>();
-        public StorageSystem()
+        public StorageSystem(CSVReader csv)
         {
-            Items = new List<Item>();
+            Items = csv.ReadList<Item>();
         }
-        public void SetItems(PluckList pluckList)
-        {
-            foreach (Item pluckItem in pluckList.Lines)
-            {
-                bool notInList = true;
 
-                foreach (Item storageItem in Items)
-                {
-                    if (pluckItem.ProductID == storageItem.ProductID)
-                    {
-                        notInList = false;
-                        break;
-                    }
-                }
-
-                if (notInList)
-                {
-                    Items.Add(pluckItem);
-                }
-            }
-        }
         public void RemoveItems(PluckList pluckList)
         {
             foreach (Item pluckItem in pluckList.Lines)

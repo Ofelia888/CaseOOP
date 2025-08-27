@@ -16,7 +16,7 @@ class Program
         List<string>? files = fileReader.ReadList();
         
         ItemScanner itemScanner = new ItemScanner();
-        StorageSystem storage = new StorageSystem();
+        StorageSystem storage = new StorageSystem(new CSVReader("items.csv"));
 
         FileMover fileMover = new FileMover(files);
 
@@ -61,8 +61,6 @@ class Program
 
             new PluckListPrinter(pluckList).Print();
             new ItemPrinter(pluckList).Print();
-
-            storage.SetItems(pluckList);
 
             //Print options
             OptionPrinter optionPrinter = new OptionPrinter();
