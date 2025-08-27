@@ -25,19 +25,11 @@ class Program
         char readKey = ' ';
         int index = -1;
         PluckList? pluckList = null;
-        List<Item> scannedItems;
 
-        FileReader xmlsFileReader = new FileReader("allPluckLists");
-        List<string> xmlFiles = xmlsFileReader.ReadList();
-        CSVWriter csv = new CSVWriter("items.csv");
-
-        List<Item> sortedItems = new List<Item>();
-        foreach (string xml in xmlFiles)
+        if (!File.Exists("items"))
         {
-            List<Item> items = new XMLReader(xml).Read<PluckList>().Lines;
-            sortedItems.AddRange(items);
+            new ItemsDB();
         }
-        csv.WriteAll(sortedItems.DistinctBy(x => x.ProductID), true, "ProductID", "Title", "Type");
 
         // Program loop
         while (readKey != 'Q')
