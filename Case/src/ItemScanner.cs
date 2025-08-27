@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace PluckList.src
@@ -23,6 +24,10 @@ namespace PluckList.src
 
             foreach (Item item in pluckList.Lines)
             {
+                if (item.Title == null || item.Title.Length == 0)
+                {
+                    continue;
+                }
                 optionPrinter.Print(item.Title);
             }
             optionPrinter.Print("Færdig");
@@ -41,7 +46,7 @@ namespace PluckList.src
 
                 foreach (Item item in pluckList.Lines)
                 {
-                    if (readKey == item.Title.First())
+                    if (readKey == item.Title?.First())
                     {
                         scannedItems.Add(item);
                         Console.WriteLine($"\n{item.Title} scannet");
