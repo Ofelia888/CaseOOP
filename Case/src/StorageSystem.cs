@@ -9,6 +9,7 @@ namespace PluckList.src
     public class StorageSystem
     {
         public List<Item> Items { get; }
+        public List<Item> reservedItems = new List<Item>();
         public StorageSystem()
         {
             Items = new List<Item>();
@@ -43,6 +44,7 @@ namespace PluckList.src
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
                         storageItem.Total -= pluckItem.Amount;
+                        reservedItems.Remove(pluckItem);
                     }
                 }
             }
@@ -53,6 +55,31 @@ namespace PluckList.src
             foreach (Item item in Items)
             {
                 statuses.Add($"{item.Title}: {item.Total} på lager");
+            }
+            return statuses;
+        }
+
+        // TODO: Rename the right list name when creating a plucklist from web
+        public List<string> ReserveOnCreate(PluckList pluckList)
+        {
+            List<string> statuses = new List<string>();
+            foreach (Item pluckItem in pluckList.Lines)
+            {
+                foreach (Item storageItem in Items)
+                {
+                    if (pluckItem.ProductID == storageItem.ProductID)
+                    {
+                        if (storageItem.Total - pluckItem.Amount < 0)
+                        {
+                            statuses.Add($"Advarsel: {storageItem.Title} har ikke nok på lager til at reservere {pluckItem.Amount}. Der er kun {storageItem.Total} på lager.");
+                        }
+                        else
+                        {
+                            statuses.Add($"{storageItem.Title}: {storageItem.Total} på lager efter reservation af {pluckItem.Amount}");
+                            reservedItems.Add(pluckItem);
+                        }
+                    }
+                }
             }
             return statuses;
         }
