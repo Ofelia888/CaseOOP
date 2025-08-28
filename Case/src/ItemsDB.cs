@@ -20,7 +20,7 @@ namespace PluckList
 
             FileReader xmlsFileReader = new FileReader("allPluckLists");
             List<string> xmlFiles = xmlsFileReader.ReadList();
-            CSVWriter csv = new CSVWriter("items.csv");
+            CSVWriter csv = (CSVWriter)_writer;
 
             List<Item> sortedItems = new List<Item>();
             foreach (string xml in xmlFiles)
@@ -33,7 +33,11 @@ namespace PluckList
 
         public void CreateDatabase()
         {
-            if (_writer is CSVWriter) CreateItemsCSVDataBase();
+            if (_writer is CSVWriter csv)
+            {
+                if (File.Exists(csv.FilePath)) return;
+                CreateItemsCSVDataBase();
+            }
             else throw new Exception("Unsupported writer");
         }
 

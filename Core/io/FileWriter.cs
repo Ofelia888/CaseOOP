@@ -2,7 +2,7 @@
 
 public class FileWriter : IContentWriter
 {
-    protected readonly string FilePath;
+    public readonly string FilePath;
     
     public FileWriter(string filePath)
     {

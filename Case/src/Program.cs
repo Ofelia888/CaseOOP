@@ -29,10 +29,7 @@ class Program
         Core.Models.PluckList? pluckList = null;
         List<Item> scannedItems;
 
-        if (!File.Exists("items"))
-        {
-            database.CreateDatabase();
-        }
+        database.CreateDatabase();
         storage.LoadItems();
 
         // Program loop

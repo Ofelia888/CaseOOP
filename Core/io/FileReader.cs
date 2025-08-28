@@ -2,7 +2,7 @@
 
 public class FileReader : IContentReader
 {
-    protected readonly string FilePath;
+    public readonly string FilePath;
 
     public FileReader(string filePath)
     {
