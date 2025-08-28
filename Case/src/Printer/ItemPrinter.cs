@@ -10,7 +10,7 @@ namespace PluckList.Printer
         {
             PluckList = pluckList;
         }
-        public void Print(StorageSystem storageSystem,string text = "default") // StorageSystem storagesystem og fjern override
+        public void Print(StorageSystem storageSystem,string text = "default")
         {
             if (PluckList.Lines != null)
             {
