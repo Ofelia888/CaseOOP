@@ -1,7 +1,26 @@
-﻿namespace PluckList.Printer
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace PluckList.Printer;
+
+public class ConsolePrinter : IPrinter
 {
-    public abstract class ConsolePrinter : IPrint
+    public virtual void Print(string text)
     {
-        public abstract void Print(string text = "default");
+        Console.WriteLine(text);
+    }
+
+    public virtual void Print([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[]? args)
+    {
+        Console.WriteLine(format, args);
+    }
+
+    public void Print()
+    {
+        Console.WriteLine();
+    }
+
+    public void Clear()
+    {
+        Console.Clear();
     }
 }
