@@ -1,24 +1,24 @@
 ﻿using Core.io;
 using Core.Models;
 
-namespace PluckList
+namespace PluckList.src.DB
 {
-    public class ItemsDB
+    public class ItemsDB : IDatabase
     {
-        private readonly IContentReader _reader;
-        private readonly IContentWriter _writer;
-        
+        public IContentReader IReader { get; private set; }
+        public IContentWriter IWriter { get; private set; }
+
         public ItemsDB(IContentReader reader, IContentWriter writer)
         {
-            _reader = reader;
-            _writer = writer;
+            IReader = reader;
+            IWriter = writer;
         }
         
         private void CreateItemsCSVDataBase()
         {
             FileReader xmlsFileReader = new FileReader("allPluckLists");
             List<string> xmlFiles = xmlsFileReader.ReadList();
-            CSVWriter csv = (CSVWriter)_writer;
+            CSVWriter csv = (CSVWriter)IWriter;
 
             List<Item> sortedItems = new List<Item>();
             foreach (string xml in xmlFiles)
@@ -31,7 +31,7 @@ namespace PluckList
 
         public void CreateDatabase()
         {
-            if (_writer is CSVWriter csv)
+            if (IWriter is CSVWriter csv)
             {
                 if (File.Exists(csv.FilePath)) return;
                 CreateItemsCSVDataBase();
@@ -41,13 +41,13 @@ namespace PluckList
 
         public List<Item> ReadDatabase()
         {
-            if (_reader is CSVReader csv) return csv.ReadList<Item>()!;
+            if (IReader is CSVReader csv) return csv.ReadList<Item>()!;
             throw new Exception("Unsupported reader");
         }
 
         public int Remove(string productId)
         {
-            if (_writer is CSVWriter csv)
+            if (IWriter is CSVWriter csv)
             {
                 return csv.Remove(entry => entry.Key == "ProductID" && entry.Value == productId);
             }
