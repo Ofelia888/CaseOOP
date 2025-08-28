@@ -2,7 +2,11 @@
 
 public interface IContentWriter
 {
-    void Write(string content);
+    void Write<T>(T content, bool append);
 
-    void Write<T>(IEnumerable<T> content);
+    void Write<T>(T content);
+
+    void WriteAll<T>(IEnumerable<T> content, bool append);
+
+    void WriteAll<T>(IEnumerable<T> content);
 }

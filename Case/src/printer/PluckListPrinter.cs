@@ -27,10 +27,10 @@ namespace PluckList.src.Printer
         {
             if (PluckList.Lines != null)
             {
-                Console.WriteLine("\n{0,-7}{1,-9}{2,-20}{3}", "Antal", "Type", "Produktnr.", "Navn");
+                Console.WriteLine("\n{0,-7}{1,-9}{2,-9}{3,-20}{4}", "Antal", "Rest", "Type", "Produktnr.", "Navn");
                 foreach (Item item in PluckList.Lines)
                 {
-                    Console.WriteLine("{0,-7}{1,-9}{2,-20}{3}", item.Amount, item.Type, item.ProductID, item.Title);
+                    Console.WriteLine("{0,-7}{1,-9}{2,-9}{3,-20}{4}", item.Amount, item.IsLeftover().ToString(), item.Type, item.ProductID, item.Title);
                 }
             }
         }

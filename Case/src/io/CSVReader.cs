@@ -2,7 +2,7 @@
 
 namespace PluckList.src.io;
 
-public class CSVReader : FileReader, ITypeReader
+public class CSVReader : FileReader, ITypeListReader
 {
     public CSVReader(string filePath) : base(filePath)
     {

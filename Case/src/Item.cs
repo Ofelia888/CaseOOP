@@ -16,5 +16,10 @@ namespace PluckList
         public string? Title;
         public ItemType Type;
         public int Amount;
+        public int Total = 100;
+        public bool IsLeftover()
+        {
+            return Total - Amount > 0;
+        }
     }
 }

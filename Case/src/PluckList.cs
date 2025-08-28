@@ -1,4 +1,4 @@
-﻿using System.Xml.Serialization;
+﻿using PluckList.src.io;
 
 namespace PluckList.src;
 public class PluckList
@@ -15,16 +15,6 @@ public class PluckList
 
     public static PluckList? Deserialize(string filePath)
     {
-        using var fileStream = File.OpenRead(filePath);
-        var xmlSerializer = new XmlSerializer(typeof(PluckList));
-        return (PluckList?)xmlSerializer.Deserialize(fileStream);
+        return new XMLReader(filePath).Read<PluckList>();
     }
-
-    //public void AddItem(Item item)
-    //{
-    //    Lines.Add(item);
-    //}
 }
-
-
-

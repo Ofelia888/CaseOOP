@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using PluckList.src.io;
+using PluckList.src.printer;
 using PluckList.src.Printer;
 
 namespace PluckList.src;
@@ -11,27 +12,32 @@ class Program
 {
     static void Main()
     {
-        FileReader fileReader = new FileReader("export");
-        List<string>? files = fileReader.ReadDirectory();
-        if (files == null)
-        {
-            Console.WriteLine("There's no files at the selected directory");
-            return;
-        }
+        FileReader fileReader = new FileReader("pending");
+        List<string>? files = fileReader.ReadList();
+        
         ItemScanner itemScanner = new ItemScanner();
+        StorageSystem storage = new StorageSystem();
 
         FileMover fileMover = new FileMover(files);
 
         ColorHandle colorHandle = new ColorHandle();
-
-        PluckListPrinter pluckListPrinter;
-        OptionPrinter optionPrinter = new OptionPrinter();
         
         char readKey = ' ';
         int index = -1;
         PluckList? pluckList = null;
         List<Item> scannedItems;
-        
+
+        FileReader xmlsFileReader = new FileReader("allPluckLists");
+        List<string> xmlFiles = xmlsFileReader.ReadList();
+        CSVWriter csv = new CSVWriter("items.csv");
+
+        List<Item> sortedItems = new List<Item>();
+        foreach (string xml in xmlFiles)
+        {
+            List<Item> items = new XMLReader(xml).Read<PluckList>().Lines;
+            sortedItems.AddRange(items);
+        }
+        csv.WriteAll(sortedItems.DistinctBy(x => x.ProductID), true, "ProductID", "Title", "Type");
 
         // Program loop
         while (readKey != 'Q')
@@ -39,30 +45,27 @@ class Program
             if (files.Count == 0)
             {
                 Console.WriteLine("No files found.");
+                break;
             }
-            else
-            {
-                if (index == -1)
-                {
-                    index = 0;
-                }
+            if (index == -1) index = 0;
 
-                // Prints file info
-                Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
-                Console.WriteLine($"\nFil: {files[index]}");
+            // Prints file info
+            Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
+            Console.WriteLine($"\nFil: {files[index]}");
 
-                // Serializes xml contents to plucklist
-                using var fileStream = fileReader.ReadSingle(index, files);
-                pluckList = fileReader.SerializeXmlTo<PluckList>(fileStream);
+            // Serializes xml contents to plucklist
+            pluckList = PluckList.Deserialize(files[index]);
+            if (pluckList == null) break;
 
-                // Prints properties from plucklist
-                pluckListPrinter = new PluckListPrinter(pluckList);
+            // Prints properties from plucklist
 
-                pluckListPrinter.Print();
-                pluckListPrinter.PrintItems();
-            }
+            new PluckListPrinter(pluckList).Print();
+            new ItemPrinter(pluckList).Print();
+
+            storage.SetItems(pluckList);
 
             //Print options
+            OptionPrinter optionPrinter = new OptionPrinter();
             Console.WriteLine("\n\nOptions:");
             optionPrinter.Print("Quit");
             if (index >= 0)
@@ -92,12 +95,7 @@ class Program
             {
                 case 'G':
                     // Refresh file contents
-                    files = fileReader.ReadDirectory();
-                    if (files == null)
-                    {
-                        Console.WriteLine("Der er ingen filer fundet på den valgte Mappe");
-                        return;
-                    }
+                    files = fileReader.ReadList();
                     fileMover = new FileMover(files);
                     index = -1;
                     Console.WriteLine("PlukLister genindlæst");
@@ -117,11 +115,20 @@ class Program
                     }
                     break;
                 case 'A':
-                    //Move files to import directory
+                    //Move files to handled directory
+                    if (index == -1)
+                    {
+                        break;
+                    }
                     fileMover.Move(index);
                     if (index == files.Count)
                     {
                         index--;
+                    }
+                    storage.RemoveItems(pluckList);
+                    foreach (string status in storage.StorageStatus())
+                    {
+                        Console.WriteLine(status);
                     }
                     break;
                 case 'Å':
@@ -143,7 +150,7 @@ class Program
                     break;
                 case 'S':
                     scannedItems = itemScanner.ScanItems(pluckList);
-                    new CSVWriter(Path.Combine("export", "varer.csv")).Write(scannedItems);
+                    new CSVWriter(Path.Combine("pending", "varer.csv")).WriteAll(scannedItems);
 
                     colorHandle.Handle(ColorContext.Status);
                     Console.WriteLine("Varer scannet til CSV fil");

@@ -8,7 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="export\**">
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Update="allPluckLists\**">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+    <None Update="pending\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="templates\**">
