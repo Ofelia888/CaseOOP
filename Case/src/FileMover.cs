@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using PluckList.Printer;
 
-namespace PluckList.src
+namespace PluckList
 {
     public class FileMover
     {
+        private readonly IPrinter _printer;
         private readonly List<string> _files;
         
-        public FileMover(List<string> files)
+        public FileMover(IPrinter printer, List<string> files)
         {
+            _printer = printer;
             _files = files;
         }
         
@@ -34,7 +34,7 @@ namespace PluckList.src
             var fileName = Path.GetFileName(_files[index]);
             File.Move(_files[index], string.Format(@"handled\\{0}", fileName), true);
 
-            Console.WriteLine($"Plukseddel {_files[index]} afsluttet.");
+            _printer.Print($"Plukseddel {_files[index]} afsluttet.");
             _files.Remove(_files[index]);
         }
     }

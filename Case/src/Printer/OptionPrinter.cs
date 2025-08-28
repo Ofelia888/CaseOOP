@@ -1,24 +1,22 @@
-﻿using System;
-using System.Linq;
+﻿namespace PluckList.Printer;
 
-namespace PluckList.Printer
+public class OptionPrinter() : ContextPrinter(new ConsolePrinter(), new OptionContext())
 {
-    public class OptionPrinter : ConsolePrinter
+    private class OptionContext : IContext
     {
-        public ColorHandle ColorHandle { get; set; }
-        public OptionPrinter()
+        public void Handle(IPrinter printer, string text)
         {
-            ColorHandle = new ColorHandle();
-        }
-        // FIX: parameter text, find different solution to make Print() in IPrint parameterless
-        public override void Print(string text)
-        {
-            char first = text.First();
-
-            ColorHandle.Handle(ColorContext.Option);
-            Console.Write(first);
-            ColorHandle.Handle(ColorContext.Standard);
-            Console.WriteLine(text.Remove(0, 1));
+            if (text.Length == 0)
+            {
+                Console.WriteLine();
+                return;
+            }
+            var color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(text[0]);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine(text[1..]);
+            Console.ForegroundColor = color;
         }
     }
 }
