@@ -25,6 +25,7 @@ class Program
         char readKey = ' ';
         int index = -1;
         PluckList? pluckList = null;
+        List<Item> scannedItems;
 
         if (!File.Exists("items"))
         {
