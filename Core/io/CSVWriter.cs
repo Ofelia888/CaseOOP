@@ -56,4 +56,23 @@ public class CSVWriter : FileWriter
     {
         WriteAll(content, append, typeof(T).GetFields().Select(field => field.Name).ToArray());
     }
+
+    public int Remove(Predicate<KeyValuePair<string, string>> predicate)
+    {
+        if (!File.Exists(FilePath)) return 0;
+        var lines = File.ReadAllLines(FilePath);
+        var modified = new List<string> { lines[0] };
+        var columns = lines[0].Split(',');
+        for (var i = 1; i < lines.Length; i++)
+        {
+            var values = lines[i].Split(',');
+            if (!columns.Where((t, j) => predicate.Invoke(new KeyValuePair<string, string>(t, values[j]))).Any())
+            {
+                modified.Add(lines[i]);
+            }
+        }
+        var changed = lines.Length - modified.Count;
+        if (changed > 0) File.WriteAllLines(FilePath, modified);
+        return changed;
+    }
 }
