@@ -6,6 +6,7 @@ namespace PluckList
     {
         public List<Item> Items { get; private set; }
         public List<Item> reservedItems = new List<Item>();
+        private Dictionary<string,int> ItemCount = new Dictionary<string,int>();
 
         private ItemsDB _database;
 
@@ -27,7 +28,7 @@ namespace PluckList
                 {
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
-                        storageItem.Total -= pluckItem.Amount;
+                        ItemCount[storageItem.ProductID!] = GetCount(storageItem) - pluckItem.Amount;
                         reservedItems.Remove(pluckItem);
                     }
                 }
@@ -38,7 +39,7 @@ namespace PluckList
             List<string> statuses = new List<string>();
             foreach (Item item in Items)
             {
-                statuses.Add($"{item.Title}: {item.Total} på lager");
+                statuses.Add($"{item.Title}: {GetCount(item)} på lager");
             }
             return statuses;
         }
@@ -53,13 +54,13 @@ namespace PluckList
                 {
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
-                        if (storageItem.Total - pluckItem.Amount < 0)
+                        if (GetCount(storageItem) - pluckItem.Amount < 0)
                         {
-                            statuses.Add($"Advarsel: {storageItem.Title} har ikke nok på lager til at reservere {pluckItem.Amount}. Der er kun {storageItem.Total} på lager.");
+                            statuses.Add($"Advarsel: {storageItem.Title} har ikke nok på lager til at reservere {pluckItem.Amount}. Der er kun {GetCount(storageItem)} på lager.");
                         }
                         else
                         {
-                            statuses.Add($"{storageItem.Title}: {storageItem.Total} på lager efter reservation af {pluckItem.Amount}");
+                            statuses.Add($"{storageItem.Title}: {GetCount(storageItem)} på lager efter reservation af {pluckItem.Amount}");
                             reservedItems.Add(pluckItem);
                         }
                     }
@@ -69,13 +70,12 @@ namespace PluckList
         }
         public bool IsLeftover(Item item)
         {
-            return item.Total - item.Amount >= 0;
+            return GetCount(item) >= item.Amount;
         }
-        public bool IsLeftover(string productId, int requestedAmount)
+
+        private int GetCount(Item item)
         {
-            var item = Items.FirstOrDefault(i => i.ProductID == productId);
-            if (item == null) return false;
-            return item.Total >= requestedAmount;
+            return ItemCount.GetValueOrDefault(item.ProductID!, 0);
         }
     }
 }

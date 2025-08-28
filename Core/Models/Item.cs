@@ -10,6 +10,5 @@
         public string? Title;
         public ItemType Type;
         public int Amount;
-        public int Total = 100;
     }
 }
