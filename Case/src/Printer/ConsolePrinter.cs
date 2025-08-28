@@ -2,6 +2,6 @@
 {
     public abstract class ConsolePrinter : IPrint
     {
-        public abstract void Print(string text = "default");
+        public abstract void Print(string text);
     }
 }

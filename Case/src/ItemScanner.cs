@@ -10,7 +10,6 @@ namespace PluckList.src
     {
         public List<Item> ScanItems(Core.Models.PluckList pluckList)
         {
-            List<Item> scannable;
             List<Item> scannedItems = new List<Item>();
             OptionPrinter optionPrinter = new OptionPrinter();
             ColorHandle color = new ColorHandle();
@@ -21,7 +20,7 @@ namespace PluckList.src
                 throw new NullReferenceException();
             }
 
-            scannable = pluckList.Lines.ToList();
+            List<Item> scannable = pluckList.Lines.ToList();
             while (scannable.Count() > 0)
             {
                 for (int i = 0; i < scannable.Count(); i++)

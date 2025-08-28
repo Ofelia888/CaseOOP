@@ -14,7 +14,7 @@ class Program
     static void Main()
     {
         FileReader fileReader = new FileReader("pending");
-        List<string>? files = fileReader.ReadList();
+        List<string> files = fileReader.ReadList();
         
         ItemScanner itemScanner = new ItemScanner();
         ItemsDB database = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));

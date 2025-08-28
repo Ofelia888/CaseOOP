@@ -5,7 +5,7 @@ namespace PluckList
     public class StorageSystem
     {
         public List<Item> Items { get; private set; }
-        public List<Item> reservedItems = new List<Item>();
+        public List<Item> ReservedItems = new List<Item>();
 
         private ItemsDB _database;
 
@@ -28,7 +28,7 @@ namespace PluckList
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
                         storageItem.Total -= pluckItem.Amount;
-                        reservedItems.Remove(pluckItem);
+                        ReservedItems.Remove(pluckItem);
                     }
                 }
             }
@@ -60,7 +60,7 @@ namespace PluckList
                         else
                         {
                             statuses.Add($"{storageItem.Title}: {storageItem.Total} på lager efter reservation af {pluckItem.Amount}");
-                            reservedItems.Add(pluckItem);
+                            ReservedItems.Add(pluckItem);
                         }
                     }
                 }

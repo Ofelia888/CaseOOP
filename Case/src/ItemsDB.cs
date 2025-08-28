@@ -16,8 +16,6 @@ namespace PluckList
         
         private void CreateItemsCSVDataBase()
         {
-            List<Item> scannedItems;
-
             FileReader xmlsFileReader = new FileReader("allPluckLists");
             List<string> xmlFiles = xmlsFileReader.ReadList();
             CSVWriter csv = (CSVWriter)_writer;
