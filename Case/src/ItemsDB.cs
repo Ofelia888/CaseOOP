@@ -46,5 +46,14 @@ namespace PluckList
             if (_reader is CSVReader csv) return csv.ReadList<Item>()!;
             throw new Exception("Unsupported reader");
         }
+
+        public int Remove(string productId)
+        {
+            if (_writer is CSVWriter csv)
+            {
+                return csv.Remove(entry => entry.Key == "ProductID" && entry.Value == productId);
+            }
+            throw new Exception("Unsupported writer");
+        }
     }
 }
