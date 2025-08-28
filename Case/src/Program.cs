@@ -1,11 +1,7 @@
 ﻿
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using Core.io;
 using Core.Models;
 using PluckList.Printer;
@@ -21,7 +17,8 @@ class Program
         List<string>? files = fileReader.ReadList();
         
         ItemScanner itemScanner = new ItemScanner();
-        StorageSystem storage = new StorageSystem(new CSVReader("items.csv"));
+        ItemsDB database = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));
+        StorageSystem storage = new StorageSystem(database);
 
         FileMover fileMover = new FileMover(files);
 
@@ -34,8 +31,9 @@ class Program
 
         if (!File.Exists("items"))
         {
-            new ItemsDB();
+            database.CreateDatabase();
         }
+        storage.LoadItems();
 
         // Program loop
         while (readKey != 'Q')

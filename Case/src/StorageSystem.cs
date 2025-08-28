@@ -1,16 +1,22 @@
-﻿using System.Collections.Generic;
-using Core.io;
-using Core.Models;
+﻿using Core.Models;
 
 namespace PluckList
 {
     public class StorageSystem
     {
-        public List<Item> Items { get; }
+        public List<Item> Items { get; private set; }
         public List<Item> reservedItems = new List<Item>();
-        public StorageSystem(CSVReader csv)
+
+        private ItemsDB _database;
+
+        public StorageSystem(ItemsDB database)
         {
-            Items = csv.ReadList<Item>();
+            _database = database;
+        }
+
+        public void LoadItems()
+        {
+            Items = _database.ReadDatabase();
         }
 
         public void RemoveItems(Core.Models.PluckList pluckList)
