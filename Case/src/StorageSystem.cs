@@ -18,7 +18,7 @@ namespace PluckList
 
         public void LoadItems()
         {
-            Items = _database.ReadDatabase();
+            Items = _database.ReadDatabase<Item>();
         }
 
         public void RemoveItems(Core.Models.PluckList pluckList)

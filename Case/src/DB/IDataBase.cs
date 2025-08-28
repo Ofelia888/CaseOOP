@@ -8,6 +8,6 @@ namespace PluckList.src.DB
         IContentReader IReader { get; }
         IContentWriter IWriter { get; }
         void CreateDatabase();
-        List<Item> ReadDatabase();
+        List<T?> ReadDatabase<T>() where T : class;
     }
 }

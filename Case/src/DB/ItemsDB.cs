@@ -39,9 +39,9 @@ namespace PluckList.src.DB
             else throw new Exception("Unsupported writer");
         }
 
-        public List<Item> ReadDatabase()
+        public List<T?> ReadDatabase<T>() where T : class
         {
-            if (IReader is CSVReader csv) return csv.ReadList<Item>()!;
+            if (IReader is CSVReader csv) return csv.ReadList<T>()!;
             throw new Exception("Unsupported reader");
         }
 

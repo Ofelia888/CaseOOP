@@ -3,9 +3,9 @@
 namespace Core.Models;
 public class PluckList
 {
-    public string? Name { get; set; }
-    public string? Shipment { get; set; }
-    public string? Address { get; set; }
+    public string? Name;
+    public string? Shipment;
+    public string? Address;
     public List<Item> Lines = new List<Item>();
 
     public Item? GetPrintItem()

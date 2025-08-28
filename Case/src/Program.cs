@@ -30,10 +30,12 @@ class Program
     {
         FileReader fileReader = new FileReader("pending");
         List<string> files = fileReader.ReadList();
-        
+
+        PluckListDB pluckListDB = new PluckListDB(new CSVReader("pluck lists.csv"), new CSVWriter("pluck lists.csv"));
+
         ItemScanner itemScanner = new ItemScanner(Printer);
-        ItemsDB database = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));
-        StorageSystem storage = new StorageSystem(database);
+        ItemsDB itemsDB = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));
+        StorageSystem storage = new StorageSystem(itemsDB);
 
         FileMover fileMover = new FileMover(Printer, files);
 
@@ -42,7 +44,8 @@ class Program
         Core.Models.PluckList? pluckList = null;
         List<Item> scannedItems;
 
-        database.CreateDatabase();
+        pluckListDB.CreateDatabase();
+        itemsDB.CreateDatabase();
         storage.LoadItems();
 
         // Program loop
