@@ -12,6 +12,7 @@ namespace PluckList.src.DB
     {
         public IContentReader IReader { get; private set; }
         public IContentWriter IWriter { get; private set; }
+
         public PluckListDB(IContentReader reader, IContentWriter writer)
         {
             IReader = reader;
@@ -29,7 +30,7 @@ namespace PluckList.src.DB
             {
                 if (xml != null) pluckLists.Add(Core.Models.PluckList.Deserialize(xml)!);
             }
-            csv.WriteAll(pluckLists, true, "Name", "Shipment", "Address");
+            csv.WriteAll(pluckLists, true, true, "Name", "Shipment", "Address");
         }
 
         public void CreateDatabase()

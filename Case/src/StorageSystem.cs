@@ -5,9 +5,8 @@ namespace PluckList
 {
     public class StorageSystem
     {
-        public List<Item> Items { get; private set; }
-        public List<Item> reservedItems = new List<Item>();
-        private Dictionary<string,int> ItemCount = new Dictionary<string,int>();
+        public List<StorageItem> Items { get; private set; }
+        public List<StorageItem> ReservedItems = new List<StorageItem>();
 
         private ItemsDB _database;
 
@@ -18,19 +17,19 @@ namespace PluckList
 
         public void LoadItems()
         {
-            Items = _database.ReadDatabase<Item>();
+            Items = _database.ReadDatabase<StorageItem>();
         }
 
         public void RemoveItems(Core.Models.PluckList pluckList)
         {
             foreach (Item pluckItem in pluckList.Lines)
             {
-                foreach (Item storageItem in Items)
+                foreach (StorageItem storageItem in Items)
                 {
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
-                        ItemCount[storageItem.ProductID!] = GetCount(storageItem) - pluckItem.Amount;
-                        reservedItems.Remove(pluckItem);
+                        storageItem.Amount -= pluckItem.Amount;
+                        ReservedItems.Remove(storageItem);
                     }
                 }
             }
@@ -38,9 +37,9 @@ namespace PluckList
         public List<string> StorageStatus()
         {
             List<string> statuses = new List<string>();
-            foreach (Item item in Items)
+            foreach (StorageItem item in Items)
             {
-                statuses.Add($"{item.Title}: {GetCount(item)} på lager");
+                statuses.Add($"{item.ProductID}: {item.Amount} på lager");
             }
             return statuses;
         }
@@ -51,18 +50,18 @@ namespace PluckList
             List<string> statuses = new List<string>();
             foreach (Item pluckItem in pluckList.Lines)
             {
-                foreach (Item storageItem in Items)
+                foreach (StorageItem storageItem in Items)
                 {
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
-                        if (GetCount(storageItem) - pluckItem.Amount < 0)
+                        if (storageItem.Amount - pluckItem.Amount < 0)
                         {
-                            statuses.Add($"Advarsel: {storageItem.Title} har ikke nok på lager til at reservere {pluckItem.Amount}. Der er kun {GetCount(storageItem)} på lager.");
+                            statuses.Add($"Advarsel: {storageItem.ProductID} har ikke nok på lager til at reservere {pluckItem.Amount}. Der er kun {storageItem.Amount} på lager.");
                         }
                         else
                         {
-                            statuses.Add($"{storageItem.Title}: {GetCount(storageItem)} på lager efter reservation af {pluckItem.Amount}");
-                            reservedItems.Add(pluckItem);
+                            statuses.Add($"{storageItem.ProductID}: {storageItem.Amount} på lager efter reservation af {pluckItem.Amount}");
+                            ReservedItems.Add(storageItem);
                         }
                     }
                 }
@@ -71,12 +70,7 @@ namespace PluckList
         }
         public bool IsLeftover(Item item)
         {
-            return GetCount(item) >= item.Amount;
-        }
-
-        private int GetCount(Item item)
-        {
-            return ItemCount.GetValueOrDefault(item.ProductID!, 0);
+            return Items.Single(x => x.ProductID == item.ProductID).Amount >= item.Amount;
         }
     }
 }

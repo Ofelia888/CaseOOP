@@ -22,6 +22,7 @@ public class CSVReader : FileReader, ITypeListReader
             var obj = constructor.Invoke(Array.Empty<object?>());
             for (var j = 0; j < values.Length; j++)
             {
+                // CHECK: Fails in PluckListDB and StorageDB ReadDatabase(); index out of range exception
                 var fieldValue = ParseType(fields[j].FieldType, values[j]);
                 fields[j].SetValue(obj, fieldValue);
             }

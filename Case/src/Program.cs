@@ -31,11 +31,12 @@ class Program
         FileReader fileReader = new FileReader("pending");
         List<string> files = fileReader.ReadList();
 
-        PluckListDB pluckListDB = new PluckListDB(new CSVReader("pluck lists.csv"), new CSVWriter("pluck lists.csv"));
-
         ItemScanner itemScanner = new ItemScanner(Printer);
         ItemsDB itemsDB = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));
         StorageSystem storage = new StorageSystem(itemsDB);
+
+        PluckListDB pluckListDB = new PluckListDB(new CSVReader("pluck lists.csv"), new CSVWriter("pluck lists.csv"));
+        StorageDB storageDB = new StorageDB(new CSVReader("storage.csv"), new CSVWriter("storage.csv"), storage);
 
         FileMover fileMover = new FileMover(Printer, files);
 
@@ -44,9 +45,13 @@ class Program
         Core.Models.PluckList? pluckList = null;
         List<Item> scannedItems;
 
-        pluckListDB.CreateDatabase();
         itemsDB.CreateDatabase();
         storage.LoadItems();
+
+        pluckListDB.CreateDatabase();
+        storageDB.CreateDatabase();
+
+        
 
         // Program loop
         while (readKey != 'Q')
