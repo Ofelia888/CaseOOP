@@ -1,6 +1,6 @@
-﻿using PluckList.src.io;
+﻿using Core.io;
 
-namespace PluckList.src;
+namespace Core.Models;
 public class PluckList
 {
     public string? Name { get; set; }

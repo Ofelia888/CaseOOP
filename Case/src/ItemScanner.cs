@@ -1,17 +1,14 @@
-﻿using PluckList.src.Printer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+using Core.Models;
+using PluckList.Printer;
 
 namespace PluckList.src
 {
     public class ItemScanner
     {
-        public List<Item> ScanItems(PluckList pluckList)
+        public List<Item> ScanItems(Core.Models.PluckList pluckList)
         {
             List<Item> scannable;
             List<Item> scannedItems = new List<Item>();

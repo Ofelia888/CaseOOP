@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace PluckList.src.io;
+namespace Core.io;
 
 public class XMLReader : FileReader, ITypeReader
 {

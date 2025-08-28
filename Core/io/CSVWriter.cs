@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace PluckList.src.io;
+namespace Core.io;
 
 public class CSVWriter : FileWriter
 {

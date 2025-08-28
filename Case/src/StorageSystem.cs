@@ -1,11 +1,8 @@
-﻿using PluckList.src.io;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Core.io;
+using Core.Models;
 
-namespace PluckList.src
+namespace PluckList
 {
     public class StorageSystem
     {
@@ -16,7 +13,7 @@ namespace PluckList.src
             Items = csv.ReadList<Item>();
         }
 
-        public void RemoveItems(PluckList pluckList)
+        public void RemoveItems(Core.Models.PluckList pluckList)
         {
             foreach (Item pluckItem in pluckList.Lines)
             {
@@ -41,7 +38,7 @@ namespace PluckList.src
         }
 
         // TODO: Rename the right list name when creating a plucklist from web
-        public List<string> ReserveOnCreate(PluckList pluckList)
+        public List<string> ReserveOnCreate(Core.Models.PluckList pluckList)
         {
             List<string> statuses = new List<string>();
             foreach (Item pluckItem in pluckList.Lines)

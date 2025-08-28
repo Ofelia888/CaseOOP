@@ -1,4 +1,8 @@
-﻿namespace PluckList.src
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace PluckList.src
 {
     public class FileMover
     {
@@ -16,7 +20,7 @@
             // HTML templates
             Directory.CreateDirectory("print");
             
-            var pluckList = PluckList.Deserialize(_files[index]);
+            var pluckList = Core.Models.PluckList.Deserialize(_files[index]);
             var printItem = pluckList?.GetPrintItem();
             if (pluckList == null || printItem == null) return;
             

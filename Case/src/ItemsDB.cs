@@ -1,11 +1,9 @@
-﻿using PluckList.src.io;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.io;
+using Core.Models;
 
-namespace PluckList.src
+namespace PluckList
 {
     public class ItemsDB
     {
@@ -24,7 +22,7 @@ namespace PluckList.src
             List<Item> sortedItems = new List<Item>();
             foreach (string xml in xmlFiles)
             {
-                List<Item> items = new XMLReader(xml).Read<PluckList>().Lines;
+                List<Item> items = new XMLReader(xml).Read<Core.Models.PluckList>().Lines;
                 sortedItems.AddRange(items);
             }
             csv.WriteAll(sortedItems.DistinctBy(x => x.ProductID), true, "ProductID", "Title", "Type");

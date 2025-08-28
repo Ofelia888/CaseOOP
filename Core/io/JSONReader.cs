@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PluckList.src.io;
+namespace Core.io;
 
 public class JSONReader : FileReader, ITypeReader
 {

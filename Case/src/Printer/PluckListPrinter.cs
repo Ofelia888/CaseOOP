@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.Models;
 
-namespace PluckList.src.Printer
+namespace PluckList.Printer
 {
     public class PluckListPrinter : ConsolePrinter
     {
-        public PluckList PluckList { get; set; }
-        public PluckListPrinter(PluckList pluckList)
+        public Core.Models.PluckList PluckList { get; set; }
+        public PluckListPrinter(Core.Models.PluckList pluckList)
         {
             PluckList = pluckList;
         }

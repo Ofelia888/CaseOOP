@@ -1,4 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PluckList.src;
 
@@ -31,7 +35,7 @@ public partial class HTMLTemplate
             (contents, variable) => contents.Replace($"[{variable}]", variables[variable]));
     }
 
-    public void Write(string filePath, PluckList pluckList)
+    public void Write(string filePath, Core.Models.PluckList pluckList)
     {
         var printItem = pluckList.GetPrintItem();
         if (printItem == null) throw new ArgumentException("No print item found");

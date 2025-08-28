@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace PluckList.src.io;
+﻿namespace Core.io;
 
 public class CSVReader : FileReader, ITypeListReader
 {

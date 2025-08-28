@@ -1,12 +1,17 @@
 ﻿
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using PluckList.src.io;
-using PluckList.src.printer;
-using PluckList.src.Printer;
+using System.IO;
+using System.Linq;
+using Core.io;
+using Core.Models;
+using PluckList.Printer;
+using PluckList.src;
 
-namespace PluckList.src;
+namespace PluckList;
 
 class Program
 {
@@ -24,7 +29,7 @@ class Program
         
         char readKey = ' ';
         int index = -1;
-        PluckList? pluckList = null;
+        Core.Models.PluckList? pluckList = null;
         List<Item> scannedItems;
 
         if (!File.Exists("items"))
@@ -47,7 +52,7 @@ class Program
             Console.WriteLine($"\nFil: {files[index]}");
 
             // Serializes xml contents to plucklist
-            pluckList = PluckList.Deserialize(files[index]);
+            pluckList = Core.Models.PluckList.Deserialize(files[index]);
             if (pluckList == null) break;
 
             // Prints properties from plucklist

@@ -1,4 +1,4 @@
-﻿namespace PluckList.src.io;
+﻿namespace Core.io;
 
 public interface ITypeReader
 {
