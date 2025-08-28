@@ -8,43 +8,61 @@ public class CSVWriter : FileWriter
     {
     }
     
-    private static string[] GetValues<T>(IEnumerable<T> content, params FieldInfo[] fields)
+    private static string[] GetValues<T>(IEnumerable<T> content, bool id, int offset, params FieldInfo[] fields)
     {
         var elements = content as T[] ?? content.ToArray();
         var contents = new string[elements.Length + 1];
         contents[0] = string.Join(",", fields.Select(field => field.Name));
+        if (id) contents[0] = "Id," + contents[0];
         for (var i = 0; i < elements.Length; i++)
         {
             var element = elements[i];
             contents[i + 1] = string.Join(",", fields.Select(field => field.GetValue(element)));
+            if (id) contents[i + 1] = $"{offset + i + 1}," + contents[i + 1];
         }
         return contents;
     }
 
-    public void Write<T>(T content, bool append, params string[] fields)
+    private int GetLastIndex()
+    {
+        if (!File.Exists(FilePath)) return 0;
+        var last = File.ReadAllLines(FilePath).Last();
+        var separator = last.IndexOf(',');
+        var idString = separator == -1 ? last : last[..separator];
+        return int.TryParse(idString, out var lastIndex) ? lastIndex : 0;
+    }
+
+    public void Write<T>(T content, bool append, bool id, params string[] fields)
     {
         var selectedFields = typeof(T).GetFields().Where(field => fields.Contains(field.Name)).ToArray();
-        var contents = GetValues(new[] { content }, selectedFields);
+        var offset = append ? GetLastIndex() : 0;
+        var contents = GetValues(new[] { content }, id, offset, selectedFields);
         if (append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
         else File.WriteAllLines(FilePath, contents);
     }
 
     public void Write<T>(T content, params string[] fields)
     {
-        Write(content, false, fields);
+        Write(content, false, false, fields);
     }
 
     public override void Write<T>(T content, bool append)
     {
-        Write(content, append, typeof(T).GetFields().Select(field => field.Name).ToArray());
+        Write(content, append, false, typeof(T).GetFields().Select(field => field.Name).ToArray());
     }
 
-    public void WriteAll<T>(IEnumerable<T> content, bool append, params string[] fields)
+    public void WriteAll<T>(IEnumerable<T> content, bool append, bool id, params string[] fields)
     {
         var selectedFields = typeof(T).GetFields().Where(field => fields.Contains(field.Name)).ToArray();
-        var contents = GetValues(content, selectedFields);
+        var offset = append ? GetLastIndex() : 0;
+        var contents = GetValues(content, id, offset, selectedFields);
         if (append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
         else File.WriteAllLines(FilePath, contents);
+    }
+    
+    public void WriteAll<T>(IEnumerable<T> contents, bool append, params string[] fields)
+    {
+        WriteAll(contents, append, false, fields);
     }
     
     public void WriteAll<T>(IEnumerable<T> content, params string[] fields)
