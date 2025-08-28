@@ -53,7 +53,7 @@ class Program
             // Prints properties from plucklist
 
             new PluckListPrinter(pluckList).Print();
-            new ItemPrinter(pluckList).Print();
+            new ItemPrinter(pluckList).Print(storage);
 
             //Print options
             OptionPrinter optionPrinter = new OptionPrinter();

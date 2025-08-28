@@ -10,16 +10,20 @@ namespace PluckList.Printer
         {
             PluckList = pluckList;
         }
-        public override void Print(string text = "default")
+        public void Print(StorageSystem storageSystem,string text = "default") // StorageSystem storagesystem og fjern override
         {
             if (PluckList.Lines != null)
             {
                 Console.WriteLine("\n{0,-7}{1,-9}{2,-9}{3,-20}{4}", "Antal", "Rest", "Type", "Produktnr.", "Navn");
                 foreach (Item item in PluckList.Lines)
                 {
-                    Console.WriteLine("{0,-7}{1,-9}{2,-9}{3,-20}{4}", item.Amount, item.IsLeftover().ToString(), item.Type, item.ProductID, item.Title);
+                    Console.WriteLine("{0,-7}{1,-9}{2,-9}{3,-20}{4}", item.Amount, storageSystem.IsLeftover(item).ToString(), item.Type, item.ProductID, item.Title);
                 }
             }
+        }
+        public override void Print(string text = "default")
+        {
+            throw new NotImplementedException();
         }
     }
 }

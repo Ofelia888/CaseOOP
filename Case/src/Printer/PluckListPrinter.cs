@@ -20,16 +20,16 @@ namespace PluckList.Printer
                 Console.WriteLine("{0, -13}{1}", "Adresse:", PluckList.Address);
             }
         }
-        public void PrintItems()
-        {
-            if (PluckList.Lines != null)
-            {
-                Console.WriteLine("\n{0,-7}{1,-9}{2,-9}{3,-20}{4}", "Antal", "Rest", "Type", "Produktnr.", "Navn");
-                foreach (Item item in PluckList.Lines)
-                {
-                    Console.WriteLine("{0,-7}{1,-9}{2,-9}{3,-20}{4}", item.Amount, item.IsLeftover().ToString(), item.Type, item.ProductID, item.Title);
-                }
-            }
-        }
+        //public void PrintItems()
+        //{
+        //    if (PluckList.Lines != null)
+        //    {
+        //        Console.WriteLine("\n{0,-7}{1,-9}{2,-9}{3,-20}{4}", "Antal", "Rest", "Type", "Produktnr.", "Navn");
+        //        foreach (Item item in PluckList.Lines)
+        //        {
+        //            Console.WriteLine("{0,-7}{1,-9}{2,-9}{3,-20}{4}", item.Amount, item.IsLeftover(), item.Type, item.ProductID, item.Title);
+        //        }
+        //    }
+        //}
     }
 }

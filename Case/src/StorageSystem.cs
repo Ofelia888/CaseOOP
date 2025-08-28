@@ -67,5 +67,15 @@ namespace PluckList
             }
             return statuses;
         }
+        public bool IsLeftover(Item item)
+        {
+            return item.Total - item.Amount >= 0;
+        }
+        public bool IsLeftover(string productId, int requestedAmount)
+        {
+            var item = Items.FirstOrDefault(i => i.ProductID == productId);
+            if (item == null) return false;
+            return item.Total >= requestedAmount;
+        }
     }
 }

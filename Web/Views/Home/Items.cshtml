@@ -6,16 +6,18 @@
     <table style="width:100%; border-collapse: collapse;" border="1">
         <thead>
             <tr>
-                <th>Title</th>
                 <th>ProductID</th>
+                <th>Title</th>
+                <th>Type</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in (List<Item>)ViewData["Items"])
             {
                 <tr>
-                    <td>@item.Title</td>
                     <td>@item.ProductID</td>
+                    <td>@item.Title</td>
+                    <td>@item.Type</td>
                 </tr>
             }
         </tbody>
