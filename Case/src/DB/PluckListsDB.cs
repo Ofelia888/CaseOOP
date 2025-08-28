@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace PluckList.src.DB
 {
-    public class PluckListDB
+    public class PluckListsDB
     {
         public IContentReader IReader { get; private set; }
         public IContentWriter IWriter { get; private set; }
-        public PluckListDB(IContentReader reader, IContentWriter writer)
+
+        public PluckListsDB(IContentReader reader, IContentWriter writer)
         {
             IReader = reader;
             IWriter = writer;
