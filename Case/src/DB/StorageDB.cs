@@ -1,4 +1,5 @@
 ﻿using Core.io;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,28 @@ namespace PluckList.src.DB
     {
         public IContentReader IReader { get; private set; }
         public IContentWriter IWriter { get; private set; }
-        private StorageSystem Storage;
+        private ItemsDB _database;
+        private List<StorageItem> _storageItems;
 
-        public StorageDB(IContentReader reader, IContentWriter writer, StorageSystem storage)
+        public StorageDB(IContentReader reader, IContentWriter writer, ItemsDB database)
         {
             IReader = reader;
             IWriter = writer;
-            Storage = storage;
+            _database = database;
+            _storageItems = new List<StorageItem>();
         }
         private void CreateStorageCSVDataBase()
         {
+            foreach (Item item in _database.ReadDatabase<Item>())
+            {
+                StorageItem storageItem = new StorageItem();
+                storageItem.ProductID = item.ProductID;
+
+                _storageItems.Add(storageItem);
+            }
+
             CSVWriter csv = (CSVWriter)IWriter;
-            csv.WriteAll(Storage.Items, true, "ProductID", "Amount");
+            csv.WriteAll(_storageItems, true, "ProductID", "Amount");
         }
 
         public void CreateDatabase()
@@ -47,7 +58,18 @@ namespace PluckList.src.DB
             {
                 if (File.Exists(csv.FilePath))
                 {
-                    csv.WriteAll(Storage.Items, false, "ProductID", "Amount");
+                    _storageItems.Clear();
+
+                    foreach (Item item in _database.ReadDatabase<Item>())
+                    {
+                        StorageItem storageItem = new StorageItem();
+                        storageItem.ProductID = item.ProductID;
+
+                        _storageItems.Add(storageItem);
+                    }
+
+                    File.Delete(csv.FilePath);
+                    csv.WriteAll(_database.ReadDatabase<StorageItem>(), true, "ProductID", "Amount");
                 }
                 else throw new Exception("File does not exist");
             }

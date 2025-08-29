@@ -8,9 +8,9 @@ namespace PluckList
         public List<StorageItem> Items { get; private set; }
         public List<StorageItem> ReservedItems = new List<StorageItem>();
 
-        private ItemsDB _database;
+        private StorageDB _database;
 
-        public StorageSystem(ItemsDB database)
+        public StorageSystem(StorageDB database)
         {
             _database = database;
         }

@@ -32,12 +32,12 @@ class Program
         List<string> files = fileReader.ReadList();
 
         ItemScanner itemScanner = new ItemScanner(Printer);
+
         ItemsDB itemsDB = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));
-        StorageSystem storage = new StorageSystem(itemsDB);
-
+        StorageDB storageDB = new StorageDB(new CSVReader("storage.csv"), new CSVWriter("storage.csv"), itemsDB);
         PluckListDB pluckListDB = new PluckListDB(new CSVReader("pluck lists.csv"), new CSVWriter("pluck lists.csv"));
-        StorageDB storageDB = new StorageDB(new CSVReader("storage.csv"), new CSVWriter("storage.csv"), storage);
 
+        StorageSystem storage = new StorageSystem(storageDB);
         FileMover fileMover = new FileMover(Printer, files);
 
         char readKey = ' ';
@@ -46,12 +46,10 @@ class Program
         List<Item> scannedItems;
 
         itemsDB.CreateDatabase();
-        storage.LoadItems();
-
-        pluckListDB.CreateDatabase();
         storageDB.CreateDatabase();
+        pluckListDB.CreateDatabase();
 
-        
+        storage.LoadItems();
 
         // Program loop
         while (readKey != 'Q')
