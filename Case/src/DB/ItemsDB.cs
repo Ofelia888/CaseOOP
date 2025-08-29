@@ -18,7 +18,7 @@ namespace PluckList.DB
             List<Item> sortedItems = new List<Item>();
             foreach (string xml in xmlFiles)
             {
-                List<Item>? items = Core.Models.PluckList.Deserialize(xml)?.Lines;
+                List<Item>? items = Core.Models.Pluklist.Deserialize(xml)?.Lines;
                 if (items != null) sortedItems.AddRange(items);
             }
             Repository.AddEntries(sortedItems.DistinctBy(item => item.ProductID).Select(item => new BaseItem

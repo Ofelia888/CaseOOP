@@ -20,7 +20,7 @@ namespace PluckList
             Items = _database.GetEntries();
         }
 
-        public void RemoveItems(Core.Models.PluckList pluckList)
+        public void RemoveItems(Core.Models.Pluklist pluckList)
         {
             foreach (Item pluckItem in pluckList.Lines)
             {
@@ -45,7 +45,7 @@ namespace PluckList
         }
 
         // TODO: Rename the right list name when creating a plucklist from web
-        public List<string> ReserveOnCreate(Core.Models.PluckList pluckList)
+        public List<string> ReserveOnCreate(Core.Models.Pluklist pluckList)
         {
             List<string> statuses = new List<string>();
             foreach (Item pluckItem in pluckList.Lines)

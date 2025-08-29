@@ -13,11 +13,11 @@ class Program
 {
     private static readonly StatePrinter Printer = new StatePrinter();
     
-    private static void PrintPluckList(Core.Models.PluckList pluckList, StorageSystem storageSystem)
+    private static void PrintPluckList(Core.Models.Pluklist pluckList, StorageSystem storageSystem)
     {
         Printer.Print("\n{0, -13}{1}", "Navn", pluckList.Name);
-        Printer.Print("{0, -13}{1}", "Forsendelse:", pluckList.Shipment);
-        Printer.Print("{0, -13}{1}", "Adresse:", pluckList.Address);
+        Printer.Print("{0, -13}{1}", "Forsendelse:", pluckList.Forsendelse);
+        Printer.Print("{0, -13}{1}", "Adresse:", pluckList.Adresse);
         if (pluckList.Lines.Count == 0) return;
         Printer.Print("\n{0,-7}{1,-9}{2,-9}{3,-20}{4}", "Antal", "Rest", "Type", "Produktnr.", "Navn");
         foreach (var item in pluckList.Lines)
@@ -42,7 +42,7 @@ class Program
 
         char readKey = ' ';
         int index = -1;
-        Core.Models.PluckList? pluckList = null;
+        Core.Models.Pluklist? pluckList = null;
         List<Item> scannedItems;
 
         itemsDB.CreateDatabase();
@@ -66,7 +66,7 @@ class Program
             Printer.Print($"\nFil: {files[index]}");
 
             // Serializes xml contents to plucklist
-            pluckList = Core.Models.PluckList.Deserialize(files[index]);
+            pluckList = Core.Models.Pluklist.Deserialize(files[index]);
             if (pluckList == null) break;
 
             // Prints properties from plucklist
@@ -144,7 +144,7 @@ class Program
                     if (pluckList == null || printItem == null) break;
                     var vars = new Dictionary<string, string>();
                     vars.Add("Name", pluckList.Name!);
-                    vars.Add("Adresse", pluckList.Address!);
+                    vars.Add("Adresse", pluckList.Adresse!);
                     vars.Add("Plukliste",
                         string.Join($"<br>{Environment.NewLine}", pluckList.Lines.Select(item => $"{item.Title} (x{item.Amount})")));
                     var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.html");

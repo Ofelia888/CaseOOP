@@ -20,7 +20,7 @@ namespace PluckList
             // HTML templates
             Directory.CreateDirectory("print");
             
-            var pluckList = Core.Models.PluckList.Deserialize(_files[index]);
+            var pluckList = Core.Models.Pluklist.Deserialize(_files[index]);
             var printItem = pluckList?.GetPrintItem();
             if (pluckList == null || printItem == null) return;
             

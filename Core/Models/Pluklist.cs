@@ -1,11 +1,11 @@
 ﻿using Core.io;
 
 namespace Core.Models;
-public class PluckList
+public class Pluklist
 {
     public string? Name;
-    public string? Shipment;
-    public string? Address;
+    public string? Forsendelse;
+    public string? Adresse;
     public List<Item> Lines = new List<Item>();
 
     public Item? GetPrintItem()
@@ -13,8 +13,8 @@ public class PluckList
         return Lines.FirstOrDefault(item => item.Type == ItemType.Print);
     }
 
-    public static PluckList? Deserialize(string filePath)
+    public static Pluklist? Deserialize(string filePath)
     {
-        return new XMLReader(filePath).Read<PluckList>();
+        return new XMLReader(filePath).Read<Pluklist>();
     }
 }

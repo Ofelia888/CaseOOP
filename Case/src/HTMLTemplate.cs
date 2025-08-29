@@ -31,7 +31,7 @@ public partial class HTMLTemplate
             (contents, variable) => contents.Replace($"[{variable}]", variables[variable]));
     }
 
-    public void Write(string filePath, Core.Models.PluckList pluckList)
+    public void Write(string filePath, Core.Models.Pluklist pluckList)
     {
         var printItem = pluckList.GetPrintItem();
         if (printItem == null) throw new ArgumentException("No print item found");
@@ -39,7 +39,7 @@ public partial class HTMLTemplate
         var vars = new Dictionary<string, string>
         {
             { "Name", pluckList.Name! },
-            { "Adresse", pluckList.Address! },
+            { "Adresse", pluckList.Adresse! },
             {
                 "Plukliste",
                 string.Join($"<br>{Environment.NewLine}",

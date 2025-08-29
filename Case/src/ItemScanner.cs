@@ -12,7 +12,7 @@ namespace PluckList
             _printer = printer;
         }
 
-        public List<Item> ScanItems(Core.Models.PluckList pluckList)
+        public List<Item> ScanItems(Core.Models.Pluklist pluckList)
         {
             List<Item> scannedItems = new List<Item>();
             IPrinter printer = new OptionPrinter();

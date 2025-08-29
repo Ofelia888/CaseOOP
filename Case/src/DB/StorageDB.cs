@@ -37,30 +37,5 @@ namespace PluckList.DB
             }
             else throw new Exception("Unsupported writer");
         }
-
-        public void UpdateDataBase()
-        {
-            if (Repository is CSVRepository<StorageItem> csv)
-            {
-                if (File.Exists(csv.FilePath))
-                {
-                    _storageItems.Clear();
-
-                    foreach (BaseItem item in _database.GetEntries())
-                    {
-                        StorageItem storageItem = new StorageItem
-                        {
-                            ProductID = item.ProductID
-                        };
-
-                        _storageItems.Add(storageItem);
-                    }
-                    File.Create(csv.FilePath);
-                    Repository.AddEntries(_storageItems);
-                }
-                else throw new Exception("File does not exist");
-            }
-            else throw new Exception("Unsupported writer");
-        }
     }
 }
