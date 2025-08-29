@@ -1,13 +1,11 @@
-﻿using Core.io;
-using Core.Models;
-
-namespace PluckList.src.DB
+﻿namespace PluckList.DB
 {
-    public interface IDatabase
+    public interface IDatabase<T> where T : class
     {
-        IContentReader IReader { get; }
-        IContentWriter IWriter { get; }
         void CreateDatabase();
-        List<T?> ReadDatabase<T>() where T : class;
+        
+        List<T> GetEntries();
+
+        int Remove(string id);
     }
 }

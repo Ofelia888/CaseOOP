@@ -1,12 +1,12 @@
 ﻿using Core.Models;
-using PluckList.src.DB;
+using PluckList.DB;
 
 namespace PluckList
 {
     public class StorageSystem
     {
-        public List<StorageItem> Items { get; private set; }
-        public List<StorageItem> ReservedItems = new List<StorageItem>();
+        public List<StorageItem> Items { get; private set; } = [];
+        public List<StorageItem> ReservedItems = [];
 
         private StorageDB _database;
 
@@ -17,7 +17,7 @@ namespace PluckList
 
         public void LoadItems()
         {
-            Items = _database.ReadDatabase<StorageItem>();
+            Items = _database.GetEntries();
         }
 
         public void RemoveItems(Core.Models.PluckList pluckList)

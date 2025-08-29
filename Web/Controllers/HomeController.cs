@@ -21,9 +21,8 @@ public class HomeController : Controller
 
     public IActionResult Items()
     {
-        CSVReader reader = new(Path.Combine("pending","varer.csv"));
-        var items = reader.ReadList<Item>(); 
-        ViewData["Items"] = items;
+        var repository = new CSVRepository<BaseItem>("items.csv");
+        ViewData["Items"] = repository.ReadEntries();
         return View();
     }
 

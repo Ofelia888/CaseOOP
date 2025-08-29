@@ -1,6 +1,6 @@
 ﻿namespace Core.io;
 
-public class FileReader : IContentReader
+public class FileReader
 {
     public readonly string FilePath;
 

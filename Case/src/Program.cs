@@ -4,8 +4,8 @@
 using System.Diagnostics;
 using Core.io;
 using Core.Models;
+using PluckList.DB;
 using PluckList.Printer;
-using PluckList.src.DB;
 
 namespace PluckList;
 
@@ -33,9 +33,9 @@ class Program
 
         ItemScanner itemScanner = new ItemScanner(Printer);
 
-        ItemsDB itemsDB = new ItemsDB(new CSVReader("items.csv"), new CSVWriter("items.csv"));
-        StorageDB storageDB = new StorageDB(new CSVReader("storage.csv"), new CSVWriter("storage.csv"), itemsDB);
-        PluckListDB pluckListDB = new PluckListDB(new CSVReader("pluck lists.csv"), new CSVWriter("pluck lists.csv"));
+        ItemsDB itemsDB = new ItemsDB(new CSVRepository<BaseItem>("items.csv"));
+        StorageDB storageDB = new StorageDB(new CSVRepository<StorageItem>("storage.csv"), itemsDB);
+        PluckListDB pluckListDB = new PluckListDB(new CSVRepository<BasePluckList>("plucklists.csv"));
 
         StorageSystem storage = new StorageSystem(storageDB);
         FileMover fileMover = new FileMover(Printer, files);
@@ -158,7 +158,7 @@ class Program
                     break;
                 case 'S':
                     scannedItems = itemScanner.ScanItems(pluckList);
-                    new CSVWriter(Path.Combine("pending", "varer.csv")).WriteAll(scannedItems);
+                    new CSVRepository<Item>(Path.Combine("pending", "varer.csv")).AddEntries(scannedItems, new DatabaseWriteOptions() { Append = false });
 
                     Printer.State = PrintState.Status;
                     Printer.Print("Varer scannet til CSV fil");

@@ -2,77 +2,28 @@
 
 namespace Core.io;
 
-public class CSVWriter : FileWriter
+public class CSVWriter<T> : IDatabaseWriter<T> where T : class
 {
-    public CSVWriter(string filePath) : base(filePath)
+    public readonly string FilePath;
+
+    public CSVWriter(string filePath)
     {
-    }
-    
-    private static string[] GetValues<T>(IEnumerable<T> content, bool id, int offset, params FieldInfo[] fields)
-    {
-        var elements = content as T[] ?? content.ToArray();
-        var contents = new string[elements.Length + 1];
-        contents[0] = string.Join(",", fields.Select(field => field.Name));
-        if (id) contents[0] = "Id," + contents[0];
-        for (var i = 0; i < elements.Length; i++)
-        {
-            var element = elements[i];
-            contents[i + 1] = string.Join(",", fields.Select(field => field.GetValue(element)));
-            if (id) contents[i + 1] = $"{offset + i + 1}," + contents[i + 1];
-        }
-        return contents;
+        FilePath  = filePath;
     }
 
-    private int GetLastIndex()
+    public void AddEntry(T entry, DatabaseWriteOptions? options = null)
     {
-        if (!File.Exists(FilePath)) return 0;
-        var last = File.ReadAllLines(FilePath).Last();
-        var separator = last.IndexOf(',');
-        var idString = separator == -1 ? last : last[..separator];
-        return int.TryParse(idString, out var lastIndex) ? lastIndex : 0;
+        AddEntries([entry], options);
     }
 
-    public void Write<T>(T content, bool append, bool id, params string[] fields)
+    public void AddEntries(IEnumerable<T> entries, DatabaseWriteOptions? options = null)
     {
-        var selectedFields = typeof(T).GetFields().Where(field => fields.Contains(field.Name)).ToArray();
-        var offset = append ? GetLastIndex() : 0;
-        var contents = GetValues(new[] { content }, id, offset, selectedFields);
-        if (append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
+        options ??= new DatabaseWriteOptions();
+        var fields = typeof(T).GetFields();
+        var offset = options.Append ? GetLastIndex() : 0;
+        var contents = GetValues(entries, options, offset, fields);
+        if (options.Append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
         else File.WriteAllLines(FilePath, contents);
-    }
-
-    public void Write<T>(T content, params string[] fields)
-    {
-        Write(content, false, false, fields);
-    }
-
-    public override void Write<T>(T content, bool append)
-    {
-        Write(content, append, false, typeof(T).GetFields().Select(field => field.Name).ToArray());
-    }
-
-    public void WriteAll<T>(IEnumerable<T> content, bool append, bool id, params string[] fields)
-    {
-        var selectedFields = typeof(T).GetFields().Where(field => fields.Contains(field.Name)).ToArray();
-        var offset = append ? GetLastIndex() : 0;
-        var contents = GetValues(content, id, offset, selectedFields);
-        if (append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
-        else File.WriteAllLines(FilePath, contents);
-    }
-    
-    public void WriteAll<T>(IEnumerable<T> contents, bool append, params string[] fields)
-    {
-        WriteAll(contents, append, false, fields);
-    }
-    
-    public void WriteAll<T>(IEnumerable<T> content, params string[] fields)
-    {
-        WriteAll(content, false, fields);
-    }
-
-    public override void WriteAll<T>(IEnumerable<T> content, bool append)
-    {
-        WriteAll(content, append, typeof(T).GetFields().Select(field => field.Name).ToArray());
     }
 
     public int Remove(Predicate<KeyValuePair<string, string>> predicate)
@@ -92,5 +43,29 @@ public class CSVWriter : FileWriter
         var changed = lines.Length - modified.Count;
         if (changed > 0) File.WriteAllLines(FilePath, modified);
         return changed;
+    }
+
+    private int GetLastIndex()
+    {
+        if (!File.Exists(FilePath)) return 0;
+        var last = File.ReadAllLines(FilePath).Last();
+        var separator = last.IndexOf(',');
+        var idString = separator == -1 ? last : last[..separator];
+        return int.TryParse(idString, out var lastIndex) ? lastIndex : 0;
+    }
+    
+    private string[] GetValues(IEnumerable<T> content, DatabaseWriteOptions options, int offset, params FieldInfo[] fields)
+    {
+        var elements = content as T[] ?? content.ToArray();
+        var contents = new string[elements.Length + 1];
+        contents[0] = string.Join(",", fields.Select(field => field.Name));
+        if (options.GenerateId) contents[0] = "Id," + contents[0];
+        for (var i = 0; i < elements.Length; i++)
+        {
+            var element = elements[i];
+            contents[i + 1] = string.Join(",", fields.Select(field => field.GetValue(element)));
+            if (options.GenerateId) contents[i + 1] = $"{offset + i + 1}," + contents[i + 1];
+        }
+        return contents;
     }
 }

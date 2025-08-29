@@ -1,12 +1,15 @@
 ﻿namespace Core.io;
 
-public class CSVReader : FileReader, ITypeListReader
+public class CSVReader<T> : IDatabaseReader<T> where T : class
 {
-    public CSVReader(string filePath) : base(filePath)
-    {
-    }
+    public readonly string FilePath;
 
-    public List<T?> ReadList<T>() where T : class
+    public CSVReader(string filePath)
+    {
+        FilePath = filePath;
+    }
+    
+    public List<T> ReadEntries(Predicate<KeyValuePair<string, object?>>? predicate = null)
     {
         var constructor = typeof(T).GetConstructor(Type.EmptyTypes);
         if (constructor == null) throw new ArgumentException($"Type does not have a default constructor: {typeof(T).FullName}");
@@ -14,24 +17,30 @@ public class CSVReader : FileReader, ITypeListReader
         var fields = (from field in typeof(T).GetFields()
             join column in lines[0].Split(",") on field.Name equals column
             select field).ToArray();
-        if (fields.Length == 0) return new List<T?>();
+        if (fields.Length == 0) return [];
         var equal = fields.Select(info => info.Name).Order().SequenceEqual(lines[0].Split(',').Order());
         if (!equal) throw new InvalidCastException($"Cannot cast fields {string.Join(", ", lines[0].Split(','))} to {typeof(T).FullName}");
-        var list = new List<T?>();
+        var list = new List<T>();
         for (var i = 1; i < lines.Length; i++)
         {
             var values = lines[i].Split(",");
-            var obj = constructor.Invoke(Array.Empty<object?>());
+            var obj = constructor.Invoke([]);
             for (var j = 0; j < values.Length; j++)
             {
                 var fieldValue = ParseType(fields[j].FieldType, values[j]);
+                if (predicate != null && !predicate.Invoke(new KeyValuePair<string, object?>(fields[j].Name, fieldValue))) continue;
                 fields[j].SetValue(obj, fieldValue);
             }
-            list.Add(obj as T);
+            list.Add((obj as T)!);
         }
         return list;
     }
 
+    public T? ReadEntry(Predicate<KeyValuePair<string, object?>> predicate)
+    {
+        return ReadEntries(predicate).FirstOrDefault();
+    }
+    
     private static object? ParseType(Type type, string serialized)
     {
         if (type.IsEnum) return Enum.TryParse(type, serialized, out var result) ? result : null;
