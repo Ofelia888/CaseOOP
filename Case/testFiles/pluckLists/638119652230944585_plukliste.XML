@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PluckList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Pluklist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Jørgen Jensen</Name>
-  <Shipment>Post Nord</Shipment>
-  <Address>Middelfartvej 88, 5700 Svendborg</Address>
+  <Forsendelse>Post Nord</Forsendelse>
+  <Adresse>Middelfartvej 88, 5700 Svendborg</Adresse>
   <Lines>
     <Item>
       <ProductID>TX-302587</ProductID>
@@ -29,4 +29,4 @@
       <Amount>1</Amount>
     </Item>
   </Lines>
-</PluckList>
+</Pluklist>
