@@ -14,7 +14,9 @@ public class CSVReader : FileReader, ITypeListReader
         var fields = (from field in typeof(T).GetFields()
             join column in lines[0].Split(",") on field.Name equals column
             select field).ToArray();
-        if (!fields.Any()) return new List<T?>();
+        if (fields.Length == 0) return new List<T?>();
+        var equal = fields.Select(info => info.Name).Order().SequenceEqual(lines[0].Split(',').Order());
+        if (!equal) throw new InvalidCastException($"Cannot cast fields {string.Join(", ", lines[0].Split(','))} to {typeof(T).FullName}");
         var list = new List<T?>();
         for (var i = 1; i < lines.Length; i++)
         {
@@ -22,7 +24,6 @@ public class CSVReader : FileReader, ITypeListReader
             var obj = constructor.Invoke(Array.Empty<object?>());
             for (var j = 0; j < values.Length; j++)
             {
-                // CHECK: Fails in PluckListDB and StorageDB ReadDatabase(); index out of range exception
                 var fieldValue = ParseType(fields[j].FieldType, values[j]);
                 fields[j].SetValue(obj, fieldValue);
             }
