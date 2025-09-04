@@ -2,14 +2,10 @@
 
 namespace Core.io;
 
-public class CSVWriter<T> : IDatabaseWriter<T> where T : class, new()
+public class CSVWriter<T>(string filePath, char separator = ',') : IDatabaseWriter<T>
+    where T : class, new()
 {
-    public readonly string FilePath;
-
-    public CSVWriter(string filePath)
-    {
-        FilePath  = filePath;
-    }
+    public readonly string FilePath = filePath;
 
     public void AddEntry(T entry, DatabaseWriteOptions? options = null)
     {
@@ -31,13 +27,12 @@ public class CSVWriter<T> : IDatabaseWriter<T> where T : class, new()
         if (!File.Exists(FilePath)) return 0;
         var lines = File.ReadAllLines(FilePath);
         var modified = new List<string> { lines[0] };
-        //var columns = lines[0].Split(',');
         var fields = (from field in typeof(T).GetFields()
-            join column in lines[0].Split(",") on field.Name equals column
+            join column in lines[0].Split(separator) on field.Name equals column
             select field).ToArray();
         for (var i = 1; i < lines.Length; i++)
         {
-            var values = lines[i].Split(',');
+            var values = lines[i].Split(separator);
             var entry = new T();
             for (var j = 0; j < values.Length; j++)
             {
@@ -45,12 +40,6 @@ public class CSVWriter<T> : IDatabaseWriter<T> where T : class, new()
                 fields[j].SetValue(entry, fieldValue);
             }
             if (!predicate.Invoke(entry)) modified.Add(lines[i]);
-            /*
-            if (!columns.Where((t, j) => predicate.Invoke(new KeyValuePair<string, string>(t, values[j]))).Any())
-            {
-                modified.Add(lines[i]);
-            }
-            */
         }
         var changed = lines.Length - modified.Count;
         if (changed > 0) File.WriteAllLines(FilePath, modified);
@@ -66,8 +55,8 @@ public class CSVWriter<T> : IDatabaseWriter<T> where T : class, new()
     {
         if (!File.Exists(FilePath)) return 0;
         var last = File.ReadAllLines(FilePath).Last();
-        var separator = last.IndexOf(',');
-        var idString = separator == -1 ? last : last[..separator];
+        var separatorIndex = last.IndexOf(separator);
+        var idString = separatorIndex == -1 ? last : last[..separatorIndex];
         return int.TryParse(idString, out var lastIndex) ? lastIndex : 0;
     }
     
@@ -75,13 +64,13 @@ public class CSVWriter<T> : IDatabaseWriter<T> where T : class, new()
     {
         var elements = content as T[] ?? content.ToArray();
         var contents = new string[elements.Length + 1];
-        contents[0] = string.Join(",", fields.Select(field => field.Name));
-        if (options.GenerateId) contents[0] = "Id," + contents[0];
+        contents[0] = string.Join(separator, fields.Select(field => field.Name));
+        if (options.GenerateId) contents[0] = "Id" + separator + contents[0];
         for (var i = 0; i < elements.Length; i++)
         {
             var element = elements[i];
-            contents[i + 1] = string.Join(",", fields.Select(field => field.GetValue(element)));
-            if (options.GenerateId) contents[i + 1] = $"{offset + i + 1}," + contents[i + 1];
+            contents[i + 1] = string.Join(separator, fields.Select(field => field.GetValue(element)));
+            if (options.GenerateId) contents[i + 1] = $"{offset + i + 1}" + separator + contents[i + 1];
         }
         return contents;
     }

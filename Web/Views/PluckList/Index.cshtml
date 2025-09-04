@@ -1,0 +1,25 @@
+﻿@using Core.Models
+<div>
+    <h1>PluckLists</h1>
+    <hr/>
+    
+    <table class="table table-striped" style="width:100%; border: 1px solid #888;">
+        <thead class="thead-light">
+        <tr>
+            <th>Name</th>
+            <th>Shipment</th>
+            <th>Address</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var pluckList in (List<BasePluckList>)ViewData["PluckLists"]!)
+        {
+            <tr>
+                <td>@pluckList.Name</td>
+                <td>@pluckList.Shipment</td>
+                <td>@pluckList.Address</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

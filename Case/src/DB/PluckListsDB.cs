@@ -14,17 +14,18 @@ namespace PluckList.DB
             FileReader xmlsFileReader = new FileReader("allPluckLists");
             List<string> xmlFiles = xmlsFileReader.ReadList();
 
-            List<Core.Models.Pluklist> pluckLists = new List<Core.Models.Pluklist>();
+            List<Pluklist> pluckLists = new List<Pluklist>();
             foreach (string xml in xmlFiles)
             {
-                if (xml != null) pluckLists.Add(Core.Models.Pluklist.Deserialize(xml)!);
+                if (xml != null) pluckLists.Add(Pluklist.Deserialize(xml)!);
             }
             Repository.AddEntries(pluckLists.Select(pluckList => new BasePluckList
             {
+                Id = Guid.NewGuid(),
                 Name = pluckList.Name!,
                 Shipment = pluckList.Forsendelse!,
                 Address = pluckList.Adresse!
-            }), new DatabaseWriteOptions() { GenerateId = true });
+            }));
         }
 
         public override void CreateDatabase()

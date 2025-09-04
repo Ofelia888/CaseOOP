@@ -1,14 +1,10 @@
 ﻿namespace Core.io;
 
-public class CSVReader<T> : IDatabaseReader<T> where T : class, new()
+public class CSVReader<T>(string filePath, char separator = ',') : IDatabaseReader<T>
+    where T : class, new()
 {
-    public readonly string FilePath;
+    public readonly string FilePath = filePath;
 
-    public CSVReader(string filePath)
-    {
-        FilePath = filePath;
-    }
-    
     public List<T> ReadEntries(Predicate<T>? predicate = null)
     {
         var constructor = typeof(T).GetConstructor(Type.EmptyTypes);
@@ -16,15 +12,15 @@ public class CSVReader<T> : IDatabaseReader<T> where T : class, new()
         if (!File.Exists(FilePath)) return [];
         var lines = File.ReadAllLines(FilePath);
         var fields = (from field in typeof(T).GetFields()
-            join column in lines[0].Split(",") on field.Name equals column
+            join column in lines[0].Split(separator) on field.Name equals column
             select field).ToArray();
         if (fields.Length == 0) return [];
-        var equal = fields.Select(info => info.Name).Order().SequenceEqual(lines[0].Split(',').Order());
-        if (!equal) throw new InvalidCastException($"Cannot cast fields {string.Join(", ", lines[0].Split(','))} to {typeof(T).FullName}");
+        var equal = fields.Select(info => info.Name).Order().SequenceEqual(lines[0].Split(separator).Order());
+        if (!equal) throw new InvalidCastException($"Cannot cast fields {string.Join(separator + " ", lines[0].Split(separator))} to {typeof(T).FullName}");
         var list = new List<T>();
         for (var i = 1; i < lines.Length; i++)
         {
-            var values = lines[i].Split(",");
+            var values = lines[i].Split(separator);
             var obj = constructor.Invoke([]);
             for (var j = 0; j < values.Length; j++)
             {

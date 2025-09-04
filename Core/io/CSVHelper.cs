@@ -55,6 +55,9 @@ public sealed class CSVHelper
             case TypeCode.Boolean:
                 if (bool.TryParse(serialized, out var @boolean)) obj = @boolean;
                 break;
+            case TypeCode.Object:
+                if (type == typeof(Guid)) return Guid.Parse(serialized);
+                throw new ArgumentException($"Unsupported type: {type.FullName}");
             default:
                 throw new ArgumentException($"Unsupported type: {type.FullName}");
         }

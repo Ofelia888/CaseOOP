@@ -48,24 +48,44 @@ public class Program
             })
             .WithName("GetWeatherForecast");
 
-        var repository = new CSVRepository<BaseItem>("items.csv");
+        var itemRepository = new CSVRepository<BaseItem>("items.csv");
+        var pluckListRepository = new CSVRepository<BasePluckList>("plucklists.csv", ';');
 
+        // TODO: Make common interface for making a REST API from a repository
         var itemsGroup = app.MapGroup("/items");
         itemsGroup.MapGet("/", async (HttpContext context) =>
         {
-            var json = JsonConvert.SerializeObject(repository.ReadEntries());
+            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries());
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
         });
         itemsGroup.MapGet("/{id}", async (HttpContext context, string id) =>
         {
-            var json = JsonConvert.SerializeObject(repository.ReadEntry(item => id.Equals(item.ProductID)));
+            var entry = itemRepository.ReadEntry(item => id.Equals(item.ProductID));
+            if (entry == null) return Results.NotFound();
+            var json = JsonConvert.SerializeObject(entry);
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
         });
         itemsGroup.MapDelete("/{id}", async (HttpContext context, string id) =>
         {
-            return await Task.FromResult(repository.Remove(item => item.ProductID.Equals(id)));
+            return await Task.FromResult(itemRepository.Remove(item => item.ProductID.Equals(id)));
+        });
+        
+        var pluckListGroup = app.MapGroup("/plucklists");
+        pluckListGroup.MapGet("/", async (HttpContext context) =>
+        {
+            var json = JsonConvert.SerializeObject(pluckListRepository.ReadEntries());
+            var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
+            return await Task.FromResult(result);
+        });
+        pluckListGroup.MapGet("/{id:guid}", async (HttpContext context, Guid id) =>
+        {
+            var entry = pluckListRepository.ReadEntry(pluckList => pluckList.Id.Equals(id));
+            if (entry == null) return Results.NotFound();
+            var json = JsonConvert.SerializeObject(entry);
+            var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
+            return await Task.FromResult(result);
         });
 
         app.Run();
