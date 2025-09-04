@@ -4,12 +4,12 @@ public class Repository<T>(IDatabaseReader<T> reader, IDatabaseWriter<T> writer)
     : IDatabaseReader<T>, IDatabaseWriter<T>
     where T : class
 {
-    public List<T> ReadEntries(Predicate<KeyValuePair<string, object?>>? predicate = null)
+    public List<T> ReadEntries(Predicate<T>? predicate = null)
     {
         return reader.ReadEntries(predicate);
     }
 
-    public T? ReadEntry(Predicate<KeyValuePair<string, object?>> predicate)
+    public T? ReadEntry(Predicate<T> predicate)
     {
         return reader.ReadEntry(predicate);
     }
@@ -24,8 +24,13 @@ public class Repository<T>(IDatabaseReader<T> reader, IDatabaseWriter<T> writer)
         writer.AddEntries(entries, options);
     }
 
-    public int Remove(Predicate<KeyValuePair<string, string>> predicate)
+    public int Remove(Predicate<T> predicate)
     {
         return writer.Remove(predicate);
+    }
+
+    public int Remove(T entry)
+    {
+        return writer.Remove(entry);
     }
 }

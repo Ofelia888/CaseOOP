@@ -2,6 +2,8 @@ using System.Diagnostics;
 using Core.io;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Web.Models;
 
 namespace Web.Controllers;
@@ -19,10 +21,13 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Items()
+    public async Task<IActionResult> Items()
     {
-        var repository = new CSVRepository<BaseItem>("items.csv");
-        ViewData["Items"] = repository.ReadEntries();
+        var httpClient = new HttpClient();
+        var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/items"));
+        var content = await response.Content.ReadAsStringAsync();
+        var items = JsonConvert.DeserializeObject<List<BaseItem>>(content);
+        ViewData["Items"] = items;
         return View();
     }
 

@@ -6,5 +6,7 @@ public interface IDatabaseWriter<T> where T : class
     
     void AddEntries(IEnumerable<T> entries, DatabaseWriteOptions? options = null);
 
-    int Remove(Predicate<KeyValuePair<string, string>> predicate);
+    int Remove(Predicate<T> predicate);
+
+    int Remove(T entry);
 }

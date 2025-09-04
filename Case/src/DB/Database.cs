@@ -2,10 +2,9 @@
 
 namespace PluckList.DB;
 
-public abstract class Database<T> : IDatabase<T> where T: class
+public abstract class Database<T> : IDatabase<T> where T: class, new()
 {
     protected readonly Repository<T> Repository;
-    protected string IdField = "Id";
 
     public Database(Repository<T> repository)
     {
@@ -13,14 +12,10 @@ public abstract class Database<T> : IDatabase<T> where T: class
     }
 
     public abstract void CreateDatabase();
+    public abstract int Remove(string id);
 
     public List<T> GetEntries()
     {
         return Repository.ReadEntries();
-    }
-
-    public int Remove(string id)
-    {
-        return Repository.Remove(entry => entry.Key == IdField && entry.Value == id);
     }
 }

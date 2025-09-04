@@ -2,7 +2,7 @@
 
 namespace Core.io;
 
-public class CSVWriter<T> : IDatabaseWriter<T> where T : class
+public class CSVWriter<T> : IDatabaseWriter<T> where T : class, new()
 {
     public readonly string FilePath;
 
@@ -26,23 +26,40 @@ public class CSVWriter<T> : IDatabaseWriter<T> where T : class
         else File.WriteAllLines(FilePath, contents);
     }
 
-    public int Remove(Predicate<KeyValuePair<string, string>> predicate)
+    public int Remove(Predicate<T> predicate)
     {
         if (!File.Exists(FilePath)) return 0;
         var lines = File.ReadAllLines(FilePath);
         var modified = new List<string> { lines[0] };
-        var columns = lines[0].Split(',');
+        //var columns = lines[0].Split(',');
+        var fields = (from field in typeof(T).GetFields()
+            join column in lines[0].Split(",") on field.Name equals column
+            select field).ToArray();
         for (var i = 1; i < lines.Length; i++)
         {
             var values = lines[i].Split(',');
+            var entry = new T();
+            for (var j = 0; j < values.Length; j++)
+            {
+                var fieldValue = CSVHelper.ParseType(fields[j].FieldType, values[j]);
+                fields[j].SetValue(entry, fieldValue);
+            }
+            if (!predicate.Invoke(entry)) modified.Add(lines[i]);
+            /*
             if (!columns.Where((t, j) => predicate.Invoke(new KeyValuePair<string, string>(t, values[j]))).Any())
             {
                 modified.Add(lines[i]);
             }
+            */
         }
         var changed = lines.Length - modified.Count;
         if (changed > 0) File.WriteAllLines(FilePath, modified);
         return changed;
+    }
+
+    public int Remove(T entry)
+    {
+        return Remove(obj => obj.Equals(entry));
     }
 
     private int GetLastIndex()

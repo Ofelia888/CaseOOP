@@ -2,7 +2,7 @@
 
 public interface IDatabaseReader<T> where T : class
 {
-    List<T> ReadEntries(Predicate<KeyValuePair<string, object?>>? predicate = null);
+    List<T> ReadEntries(Predicate<T>? predicate = null);
     
-    T? ReadEntry(Predicate<KeyValuePair<string, object?>> predicate);
+    T? ReadEntry(Predicate<T> predicate);
 }

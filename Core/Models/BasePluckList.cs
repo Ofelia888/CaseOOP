@@ -2,7 +2,7 @@
 
 public class BasePluckList
 {
-    public required string Name;
-    public required string Shipment;
-    public required string Address;
+    public string Name;
+    public string Shipment;
+    public string Address;
 }

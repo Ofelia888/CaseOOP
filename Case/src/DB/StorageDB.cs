@@ -10,7 +10,6 @@ namespace PluckList.DB
 
         public StorageDB(Repository<StorageItem> repository, ItemsDB database) : base(repository)
         {
-            IdField = "ProductID";
             _database = database;
             _storageItems = new List<StorageItem>();
         }
@@ -36,6 +35,11 @@ namespace PluckList.DB
                 CreateStorageCSVDataBase();
             }
             else throw new Exception("Unsupported writer");
+        }
+
+        public override int Remove(string id)
+        {
+            return Repository.Remove(item => item.ProductID.Equals(id));
         }
     }
 }

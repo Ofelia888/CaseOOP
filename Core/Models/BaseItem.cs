@@ -2,7 +2,7 @@
 
 public class BaseItem
 {
-    public required string ProductID;
-    public required string Title;
-    public required ItemType Type;
+    public string ProductID;
+    public string Title;
+    public ItemType Type;
 }

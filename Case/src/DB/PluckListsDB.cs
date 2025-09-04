@@ -36,5 +36,10 @@ namespace PluckList.DB
             }
             else throw new Exception("Unsupported writer");
         }
+
+        public override int Remove(string id)
+        {
+            return Repository.Remove(pluckList => pluckList.Name.Equals(id));
+        }
     }
 }
