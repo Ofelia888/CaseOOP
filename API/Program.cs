@@ -51,6 +51,7 @@ public class Program
         var itemRepository = new CSVRepository<BaseItem>("items.csv");
         var pluckListRepository = new CSVRepository<BasePluckList>("plucklists.csv", ';');
         var storageRepository = new CSVRepository<StorageItem>("storage.csv");
+        var pluckListItemsRepository = new CSVRepository<PluckListItem>("plucklist_items.csv");
 
         // TODO: Make common interface for making a REST API from a repository
         var itemsGroup = app.MapGroup("/items");
@@ -98,6 +99,58 @@ public class Program
             var json = JsonConvert.SerializeObject(entry);
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
+        });
+        pluckListGroup.MapPost("/create", (HttpContext context) =>
+        {
+            List<string> missing = [];
+            if (!context.Request.Form.TryGetValue("name", out var name) || name[0]!.Length == 0) missing.Add("name");
+            if (!context.Request.Form.TryGetValue("shipment", out var shipment) || shipment[0]!.Length == 0) missing.Add("shipment");
+            if (!context.Request.Form.TryGetValue("address", out var address) || address[0]!.Length == 0) missing.Add("address");
+            if (!context.Request.Form.TryGetValue("items", out var items) || items[0]!.Length == 0) missing.Add("items");
+            if (missing.Count != 0) return Results.BadRequest($"Missing arguments: {string.Join(", ", missing)}");
+            List<Item> lines = [];
+            List<string> errors = [];
+            foreach (var itemString in items.Select(item => item!.Split(";")))
+            {
+                foreach (var values in itemString.Select(item => item.Split(',')))
+                {
+                    if (values.Length != 2 || !int.TryParse(values[1], out var amount))
+                    {
+                        errors.Add($"Invalid item format: {string.Join(",", values)}");
+                        continue;
+                    }
+                    var productId = values[0];
+                    var item = itemRepository.ReadEntry(item => item.ProductID.Equals(productId));
+                    if (item == null)
+                    {
+                        errors.Add($"Unrecognized item: {productId}");
+                        continue;
+                    }
+                    lines.Add(new Item()
+                    {
+                        ProductID = productId,
+                        Title = item.Title,
+                        Type = item.Type,
+                        Amount = amount
+                    });
+                }
+            }
+            if (lines.Count == 0) return Results.BadRequest(errors);
+            var pluckList = new BasePluckList()
+            {
+                Id = Guid.NewGuid(),
+                Name = name[0]!,
+                Shipment = shipment[0]!,
+                Address = address[0]!
+            };
+            pluckListRepository.AddEntry(pluckList);
+            pluckListItemsRepository.AddEntries(lines.Select(item => new PluckListItem()
+            {
+                Id = pluckList.Id,
+                ProductID = item.ProductID,
+                Amount = item.Amount
+            }));
+            return Results.Ok(pluckList);
         });
 
         app.Run();

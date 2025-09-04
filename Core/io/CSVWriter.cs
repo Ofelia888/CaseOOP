@@ -18,7 +18,7 @@ public class CSVWriter<T>(string filePath, char separator = ',') : IDatabaseWrit
         var fields = typeof(T).GetFields();
         var offset = options.Append ? GetLastIndex() : 0;
         var contents = GetValues(entries, options, offset, fields);
-        if (options.Append) File.AppendAllLines(FilePath, File.Exists(FilePath) ? contents.Skip(1) : contents);
+        if (options.Append && File.Exists(FilePath)) File.AppendAllLines(FilePath, contents.Skip(1));
         else File.WriteAllLines(FilePath, contents);
     }
 
