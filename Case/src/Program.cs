@@ -35,7 +35,7 @@ class Program
 
         ItemsDB itemsDB = new ItemsDB(new CSVRepository<BaseItem>("items.csv"));
         StorageDB storageDB = new StorageDB(new CSVRepository<StorageItem>("storage.csv"), itemsDB);
-        PluckListDB pluckListDB = new PluckListDB(new CSVRepository<BasePluckList>("plucklists.csv"));
+        PluckListDB pluckListDB = new PluckListDB(new CSVRepository<BasePluckList>("plucklists.csv", ';'));
 
         StorageSystem storage = new StorageSystem(storageDB);
         FileMover fileMover = new FileMover(Printer, files);
