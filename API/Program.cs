@@ -50,12 +50,19 @@ public class Program
 
         var itemRepository = new CSVRepository<BaseItem>("items.csv");
         var pluckListRepository = new CSVRepository<BasePluckList>("plucklists.csv", ';');
+        var storageRepository = new CSVRepository<StorageItem>("storage.csv");
 
         // TODO: Make common interface for making a REST API from a repository
         var itemsGroup = app.MapGroup("/items");
         itemsGroup.MapGet("/", async (HttpContext context) =>
         {
-            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries());
+            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries().Select(entry => new
+            {
+                entry.ProductID,
+                entry.Title,
+                entry.Type,
+                Amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0
+            }));
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
         });
@@ -63,7 +70,12 @@ public class Program
         {
             var entry = itemRepository.ReadEntry(item => id.Equals(item.ProductID));
             if (entry == null) return Results.NotFound();
-            var json = JsonConvert.SerializeObject(entry);
+            var json = JsonConvert.SerializeObject(new {
+                entry.ProductID,
+                entry.Title,
+                entry.Type,
+                Amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0
+            });
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
         });

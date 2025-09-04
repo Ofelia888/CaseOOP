@@ -1,10 +1,8 @@
 using System.Diagnostics;
-using Core.io;
-using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Web.Models;
+using Item = Web.Models.Item;
 
 namespace Web.Controllers;
 
@@ -26,7 +24,7 @@ public class HomeController : Controller
         var httpClient = new HttpClient();
         var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/items"));
         var content = await response.Content.ReadAsStringAsync();
-        var items = JsonConvert.DeserializeObject<List<BaseItem>>(content);
+        var items = JsonConvert.DeserializeObject<List<Item>>(content);
         ViewData["Items"] = items;
         return View();
     }
