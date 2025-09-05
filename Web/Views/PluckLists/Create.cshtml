@@ -1,15 +1,15 @@
 ﻿<h1>Create PluckList</h1>
-<form asp-controller="PluckList" asp-action="CreatePluckList" method="post">
-    <label>Name:
+<form asp-controller="PluckLists" asp-action="CreatePluckList" method="post">
+    <label class="col-2 mb-2">Name:
         <input type="text" name="name"/>
     </label><br/>
-    <label>Shipment:
+    <label class="col-2 mb-2">Shipment:
         <input type="text" name="shipment"/>
     </label><br/>
-    <label>Address:
+    <label class="col-2 mb-2">Address:
         <input type="text" name="address"/>
     </label><br/>
-    <label>Items:
+    <label class="col-2 mb-2">Items:
         <input type="text" name="items"/>
     </label><br/>
     <button type="submit">Submit</button>

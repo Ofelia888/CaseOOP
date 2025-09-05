@@ -88,7 +88,32 @@ public class Program
         var pluckListGroup = app.MapGroup("/plucklists");
         pluckListGroup.MapGet("/", async (HttpContext context) =>
         {
-            var json = JsonConvert.SerializeObject(pluckListRepository.ReadEntries());
+            var pluckLists = pluckListRepository.ReadEntries()
+                .Select(pluckList =>
+                {
+                    var items = pluckListItemsRepository.ReadEntries(pluckListItem => pluckListItem.Id.Equals(pluckList.Id))
+                        .Select(pluckListItem =>
+                        {
+                            var item = itemRepository.ReadEntry(item => item.ProductID.Equals(pluckListItem.ProductID));
+                            if (item == null) return null;
+                            return new Item
+                            {
+                                ProductID = pluckListItem.ProductID,
+                                Title = item.Title,
+                                Type = item.Type,
+                                Amount = pluckListItem.Amount
+                            };
+                        }).Where(item => item != null).ToList();
+                    return new FullPluckList()
+                    {
+                        Id = pluckList.Id,
+                        Name = pluckList.Name,
+                        Shipment = pluckList.Shipment,
+                        Address = pluckList.Address,
+                        Items = items!
+                    };
+                }).ToArray();
+            var json = JsonConvert.SerializeObject(pluckLists);
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
         });

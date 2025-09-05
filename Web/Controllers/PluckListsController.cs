@@ -1,10 +1,11 @@
 ﻿using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Web.Models;
 
 namespace Web.Controllers;
 
-public class PluckListController : Controller
+public class PluckListsController : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -12,7 +13,12 @@ public class PluckListController : Controller
         var httpClient = new HttpClient();
         var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/plucklists"));
         var json = await response.Content.ReadAsStringAsync();
-        var pluckLists = JsonConvert.DeserializeObject<List<BasePluckList>>(json);
+        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)?.Select(pluckList => new PluckList
+        {
+            Name = pluckList.Name,
+            Shipment = pluckList.Shipment,
+            Address = pluckList.Address
+        }).ToList() ?? [];
         ViewData["PluckLists"] = pluckLists;
         return View();
     }
