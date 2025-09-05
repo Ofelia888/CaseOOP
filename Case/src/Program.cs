@@ -2,71 +2,79 @@
 //Eksempel på funktionel kodning hvor der kun bliver brugt et model lag
 
 using System.Diagnostics;
-using PluckList.src.io;
-using PluckList.src.printer;
-using PluckList.src.Printer;
+using Core.io;
+using Core.Models;
+using PluckList.DB;
+using PluckList.Printer;
 
-namespace PluckList.src;
+namespace PluckList;
 
 class Program
 {
+    private static readonly StatePrinter Printer = new StatePrinter();
+    
+    private static void PrintPluckList(Core.Models.Pluklist pluckList, StorageSystem storageSystem)
+    {
+        Printer.Print("\n{0, -13}{1}", "Navn", pluckList.Name);
+        Printer.Print("{0, -13}{1}", "Forsendelse:", pluckList.Forsendelse);
+        Printer.Print("{0, -13}{1}", "Adresse:", pluckList.Adresse);
+        if (pluckList.Lines.Count == 0) return;
+        Printer.Print("\n{0,-7}{1,-9}{2,-9}{3,-20}{4}", "Antal", "Rest", "Type", "Produktnr.", "Navn");
+        foreach (var item in pluckList.Lines)
+        {
+            Printer.Print("{0,-7}{1,-9}{2,-9}{3,-20}{4}", item.Amount, storageSystem.IsLeftover(item).ToString(), item.Type, item.ProductID, item.Title);
+        }
+    }
+    
     static void Main()
     {
         FileReader fileReader = new FileReader("pending");
-        List<string>? files = fileReader.ReadList();
-        
-        ItemScanner itemScanner = new ItemScanner();
-        StorageSystem storage = new StorageSystem();
+        List<string> files = fileReader.ReadList();
 
-        FileMover fileMover = new FileMover(files);
+        ItemScanner itemScanner = new ItemScanner(Printer);
 
-        ColorHandle colorHandle = new ColorHandle();
-        
+        ItemsDB itemsDB = new ItemsDB(new CSVRepository<BaseItem>("items.csv"));
+        StorageDB storageDB = new StorageDB(new CSVRepository<StorageItem>("storage.csv"), itemsDB);
+        PluckListDB pluckListDB = new PluckListDB(new CSVRepository<BasePluckList>("plucklists.csv", ';'));
+
+        StorageSystem storage = new StorageSystem(storageDB);
+        FileMover fileMover = new FileMover(Printer, files);
+
         char readKey = ' ';
         int index = -1;
-        PluckList? pluckList = null;
+        Core.Models.Pluklist? pluckList = null;
         List<Item> scannedItems;
 
-        FileReader xmlsFileReader = new FileReader("allPluckLists");
-        List<string> xmlFiles = xmlsFileReader.ReadList();
-        CSVWriter csv = new CSVWriter("items.csv");
+        itemsDB.CreateDatabase();
+        storageDB.CreateDatabase();
+        pluckListDB.CreateDatabase();
 
-        List<Item> sortedItems = new List<Item>();
-        foreach (string xml in xmlFiles)
-        {
-            List<Item> items = new XMLReader(xml).Read<PluckList>().Lines;
-            sortedItems.AddRange(items);
-        }
-        csv.WriteAll(sortedItems.DistinctBy(x => x.ProductID), true, "ProductID", "Title", "Type");
+        storage.LoadItems();
 
         // Program loop
         while (readKey != 'Q')
         {
             if (files.Count == 0)
             {
-                Console.WriteLine("No files found.");
+                Printer.Print("No files found.");
                 break;
             }
             if (index == -1) index = 0;
 
             // Prints file info
-            Console.WriteLine($"PlukListe {index + 1} af {files.Count}");
-            Console.WriteLine($"\nFil: {files[index]}");
+            Printer.Print($"PlukListe {index + 1} af {files.Count}");
+            Printer.Print($"\nFil: {files[index]}");
 
             // Serializes xml contents to plucklist
-            pluckList = PluckList.Deserialize(files[index]);
+            pluckList = Core.Models.Pluklist.Deserialize(files[index]);
             if (pluckList == null) break;
 
             // Prints properties from plucklist
-
-            new PluckListPrinter(pluckList).Print();
-            new ItemPrinter(pluckList).Print();
-
-            storage.SetItems(pluckList);
+            PrintPluckList(pluckList, storage);
 
             //Print options
-            OptionPrinter optionPrinter = new OptionPrinter();
-            Console.WriteLine("\n\nOptions:");
+            var optionPrinter = new OptionPrinter();
+            Printer.Print("\n\nOptions:");
             optionPrinter.Print("Quit");
             if (index >= 0)
             {
@@ -87,18 +95,18 @@ class Program
             // Takes input
             readKey = Console.ReadKey().KeyChar;
             readKey = char.ToUpper(readKey);
-            Console.Clear();
+            Printer.Clear();
 
             // Handles input
-            colorHandle.Handle(ColorContext.Status);
+            Printer.State = PrintState.Status;
             switch (readKey)
             {
                 case 'G':
                     // Refresh file contents
                     files = fileReader.ReadList();
-                    fileMover = new FileMover(files);
+                    fileMover = new FileMover(Printer, files);
                     index = -1;
-                    Console.WriteLine("PlukLister genindlæst");
+                    Printer.Print("PlukLister genindlæst");
                     break;
                 case 'F':
                     // Go to previous file
@@ -128,7 +136,7 @@ class Program
                     storage.RemoveItems(pluckList);
                     foreach (string status in storage.StorageStatus())
                     {
-                        Console.WriteLine(status);
+                        Printer.Print(status);
                     }
                     break;
                 case 'Å':
@@ -136,7 +144,7 @@ class Program
                     if (pluckList == null || printItem == null) break;
                     var vars = new Dictionary<string, string>();
                     vars.Add("Name", pluckList.Name!);
-                    vars.Add("Adresse", pluckList.Address!);
+                    vars.Add("Adresse", pluckList.Adresse!);
                     vars.Add("Plukliste",
                         string.Join($"<br>{Environment.NewLine}", pluckList.Lines.Select(item => $"{item.Title} (x{item.Amount})")));
                     var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.html");
@@ -150,15 +158,14 @@ class Program
                     break;
                 case 'S':
                     scannedItems = itemScanner.ScanItems(pluckList);
-                    new CSVWriter(Path.Combine("pending", "varer.csv")).WriteAll(scannedItems);
+                    new CSVRepository<Item>(Path.Combine("pending", "varer.csv")).AddEntries(scannedItems, new DatabaseWriteOptions() { Append = false });
 
-                    colorHandle.Handle(ColorContext.Status);
-                    Console.WriteLine("Varer scannet til CSV fil");
+                    Printer.State = PrintState.Status;
+                    Printer.Print("Varer scannet til CSV fil");
                     break;
             }
 
-            colorHandle.Handle(ColorContext.Standard);
-
+            Printer.State = PrintState.Standard;
         }
     }
 }

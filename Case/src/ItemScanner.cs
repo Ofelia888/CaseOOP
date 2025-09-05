@@ -1,22 +1,21 @@
-﻿using PluckList.src.Printer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+﻿using Core.Models;
+using PluckList.Printer;
 
-namespace PluckList.src
+namespace PluckList
 {
     public class ItemScanner
     {
-        public List<Item> ScanItems(PluckList pluckList)
+        private readonly StatePrinter _printer;
+
+        public ItemScanner(StatePrinter printer)
         {
-            List<Item> scannable;
+            _printer = printer;
+        }
+
+        public List<Item> ScanItems(Core.Models.Pluklist pluckList)
+        {
             List<Item> scannedItems = new List<Item>();
-            OptionPrinter optionPrinter = new OptionPrinter();
-            ColorHandle color = new ColorHandle();
+            IPrinter printer = new OptionPrinter();
             char readKey = ' ';
 
             if (pluckList == null)
@@ -24,7 +23,7 @@ namespace PluckList.src
                 throw new NullReferenceException();
             }
 
-            scannable = pluckList.Lines.ToList();
+            List<Item> scannable = pluckList.Lines.ToList();
             while (scannable.Count() > 0)
             {
                 for (int i = 0; i < scannable.Count(); i++)
@@ -34,22 +33,22 @@ namespace PluckList.src
                     {
                         continue;
                     }
-                    optionPrinter.Print(item.Title);
+                    printer.Print(item.Title);
                 }
-                optionPrinter.Print("Færdig");
+                printer.Print("Færdig");
 
             
-                Console.WriteLine();
+                _printer.Print();
                 readKey = Console.ReadKey().KeyChar;
                 readKey = char.ToUpper(readKey);
 
                 if (readKey == 'F')
                 {
-                    Console.Clear();
+                    _printer.Clear();
                     return scannedItems;
                 }
 
-                Console.Clear();
+                _printer.Clear();
                 for (int i = 0; i < scannable.Count(); i++)
                 {
                     Item item = scannable[i];
@@ -58,9 +57,9 @@ namespace PluckList.src
                         scannedItems.Add(item);
                         scannable.Remove(item);
                         
-                        color.Handle(ColorContext.Status);
-                        Console.WriteLine($"\n{item.Title} scannet");
-                        color.Handle(ColorContext.Standard);
+                        _printer.State = PrintState.Status;
+                        _printer.Print($"\n{item.Title} scannet");
+                        _printer.State = PrintState.Standard;
                     }
                 }
             }

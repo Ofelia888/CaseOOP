@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Pluklister";
+}
+
+<div>
+    <h1>@ViewData["Title"]</h1>
+    <a asp-action="Create">Create</a>
+    <hr/>
+    
+    <table class="table table-striped" style="width:100%; border: 1px solid #888;">
+        <thead class="thead-light">
+        <tr>
+            <th class="col-3">Name</th>
+            <th class="col-3">Shipment</th>
+            <th class="col-3">Address</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var pluckList in (List<PluckList>)ViewData["PluckLists"]!)
+        {
+            <tr>
+                <td>@pluckList.Name</td>
+                <td>@pluckList.Shipment</td>
+                <td>@pluckList.Address</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

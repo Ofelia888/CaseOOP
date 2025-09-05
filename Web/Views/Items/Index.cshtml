@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Varer";
+}
+
+<div>
+    <h1>@ViewData["Title"]</h1>
+    <hr/>
+    
+    <table class="table table-striped" style="width:100%; border: 1px solid #888;">
+        <thead class="thead-light">
+            <tr>
+                <th class="col-5">ProductID</th>
+                <th class="col-5">Title</th>
+                <th class="col-1">Type</th>
+                <th class="col-1">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Item>)ViewData["Items"]!)
+            {
+                <tr>
+                    <td>@item.ProductID</td>
+                    <td>@item.Title</td>
+                    <td>@item.Type</td>
+                    <td>@item.Amount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

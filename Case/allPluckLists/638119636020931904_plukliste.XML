@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PluckList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Pluklist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Peter Jørgensen</Name>
-  <Shipment>Post Nord</Shipment>
-  <Address>Odensevej 97, 5300 Kerteminde</Address>
+  <Forsendelse>Post Nord</Forsendelse>
+  <Adresse>Odensevej 97, 5300 Kerteminde</Adresse>
   <Lines>
     <Item>
       <ProductID>NETGEAR-CM1000</ProductID>
@@ -29,4 +29,4 @@
       <Amount>1</Amount>
     </Item>
   </Lines>
-</PluckList>
+</Pluklist>

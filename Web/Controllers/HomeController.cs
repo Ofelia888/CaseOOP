@@ -1,34 +1,38 @@
 using System.Diagnostics;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using PluckList;
+using Newtonsoft.Json;
 using Web.Models;
 
 namespace Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    [HttpGet]
+    public async Task<IActionResult> Index()
     {
-        _logger = logger;
-    }
-    public IActionResult Index()
-    {
+        var httpClient = new HttpClient();
+        var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/plucklists"));
+        var json = await response.Content.ReadAsStringAsync();
+        ViewData["Page"] = 0;
+        ViewData["Pages"] = JsonConvert.DeserializeObject<List<FullPluckList>>(json)?.Count ?? 0;
         return View();
     }
 
-    public IActionResult Items()
+    [HttpGet]
+    public async Task<PartialViewResult> GetPluckList(int index)
     {
-        PluckList.src.io.CSVReader reader = new(Path.Combine("pending","varer.csv"));
-        var items = reader.ReadList<Item>(); 
-        ViewData["Items"] = items;
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
+        var httpClient = new HttpClient();
+        var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/plucklists"));
+        var json = await response.Content.ReadAsStringAsync();
+        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)?.Select(pluckList => new Pluklist()
+        {
+            Name = pluckList.Name,
+            Forsendelse = pluckList.Shipment,
+            Adresse = pluckList.Address,
+            Lines = pluckList.Items
+        }).ToList() ?? [];
+        return PartialView("_PluckList", pluckLists[index]);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

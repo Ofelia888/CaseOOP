@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PluckList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Pluklist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Peter Hansen</Name>
-  <Shipment>DAO</Shipment>
-  <Address>Bogensevej 24, 5500 Middelfart</Address>
+  <Forsendelse>DAO</Forsendelse>
+  <Adresse>Bogensevej 24, 5500 Middelfart</Adresse>
   <Lines>
     <Item>
       <ProductID>NETGEAR-CM1000</ProductID>
@@ -29,4 +29,4 @@
       <Amount>1</Amount>
     </Item>
   </Lines>
-</PluckList>
+</Pluklist>

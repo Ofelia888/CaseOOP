@@ -1,48 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Models;
+using PluckList.DB;
 
-namespace PluckList.src
+namespace PluckList
 {
     public class StorageSystem
     {
-        public List<Item> Items { get; }
-        public StorageSystem()
+        public List<StorageItem> Items { get; private set; } = [];
+        public List<StorageItem> ReservedItems = [];
+
+        private StorageDB _database;
+
+        public StorageSystem(StorageDB database)
         {
-            Items = new List<Item>();
+            _database = database;
         }
-        public void SetItems(PluckList pluckList)
+
+        public void LoadItems()
+        {
+            Items = _database.GetEntries();
+        }
+
+        public void RemoveItems(Core.Models.Pluklist pluckList)
         {
             foreach (Item pluckItem in pluckList.Lines)
             {
-                bool notInList = true;
-
-                foreach (Item storageItem in Items)
+                foreach (StorageItem storageItem in Items)
                 {
                     if (pluckItem.ProductID == storageItem.ProductID)
                     {
-                        notInList = false;
-                        break;
-                    }
-                }
-
-                if (notInList)
-                {
-                    Items.Add(pluckItem);
-                }
-            }
-        }
-        public void RemoveItems(PluckList pluckList)
-        {
-            foreach (Item pluckItem in pluckList.Lines)
-            {
-                foreach (Item storageItem in Items)
-                {
-                    if (pluckItem.ProductID == storageItem.ProductID)
-                    {
-                        storageItem.Total -= pluckItem.Amount;
+                        storageItem.Amount -= pluckItem.Amount;
+                        ReservedItems.Remove(storageItem);
                     }
                 }
             }
@@ -50,11 +37,40 @@ namespace PluckList.src
         public List<string> StorageStatus()
         {
             List<string> statuses = new List<string>();
-            foreach (Item item in Items)
+            foreach (StorageItem item in Items)
             {
-                statuses.Add($"{item.Title}: {item.Total} på lager");
+                statuses.Add($"{item.ProductID}: {item.Amount} på lager");
             }
             return statuses;
+        }
+
+        // TODO: Rename the right list name when creating a plucklist from web
+        public List<string> ReserveOnCreate(Core.Models.Pluklist pluckList)
+        {
+            List<string> statuses = new List<string>();
+            foreach (Item pluckItem in pluckList.Lines)
+            {
+                foreach (StorageItem storageItem in Items)
+                {
+                    if (pluckItem.ProductID == storageItem.ProductID)
+                    {
+                        if (storageItem.Amount - pluckItem.Amount < 0)
+                        {
+                            statuses.Add($"Advarsel: {storageItem.ProductID} har ikke nok på lager til at reservere {pluckItem.Amount}. Der er kun {storageItem.Amount} på lager.");
+                        }
+                        else
+                        {
+                            statuses.Add($"{storageItem.ProductID}: {storageItem.Amount} på lager efter reservation af {pluckItem.Amount}");
+                            ReservedItems.Add(storageItem);
+                        }
+                    }
+                }
+            }
+            return statuses;
+        }
+        public bool IsLeftover(Item item)
+        {
+            return Items.Single(x => x.ProductID == item.ProductID).Amount >= item.Amount;
         }
     }
 }

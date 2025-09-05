@@ -19,7 +19,7 @@ public class Program
             app.UseHsts();
         }
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
         app.UseRouting();
 
         app.UseAuthorization();
