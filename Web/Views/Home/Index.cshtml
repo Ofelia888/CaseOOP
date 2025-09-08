@@ -6,6 +6,7 @@
 
 <button>Quit</button>
 <button>Aflust</button>
+<button id="pluckListView_previous">Forrige</button>
 <button id="pluckListView_next">Næste</button>
 <button>Genindlæs</button>
 <button>Åbn print</button>
@@ -28,6 +29,24 @@
                 data: { index: index }
             }).done(function (view) {
                 page.html(index + 1);
+                $("#pluckListView").html(view);
+                processing = false;
+            }).fail(function () {
+                processing = false;
+            })
+        })
+        $("#pluckListView_previous").click(function () {
+            if (processing) return;
+            let page = $("#page");
+            let index = parseInt(page.html());
+            if (index <= 1) return;
+            processing = true;
+            $.ajax({
+                url: "/Home/GetPluckList",
+                type: "GET",
+                data: { index: index - 2 }
+            }).done(function (view) {
+                page.html(index - 1);
                 $("#pluckListView").html(view);
                 processing = false;
             }).fail(function () {
