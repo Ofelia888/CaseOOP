@@ -17,9 +17,36 @@ public class CSVWriter<T>(string filePath, char separator = ',') : IDatabaseWrit
         options ??= new DatabaseWriteOptions();
         var fields = typeof(T).GetFields();
         var offset = options.Append ? GetLastIndex() : 0;
-        var contents = GetValues(entries, options, offset, fields);
+        var contents = GetRows(entries, options, offset, fields);
         if (options.Append && File.Exists(FilePath)) File.AppendAllLines(FilePath, contents.Skip(1));
         else File.WriteAllLines(FilePath, contents);
+    }
+
+    public int Update(Predicate<T> predicate, Func<T, T> mapper)
+    {
+        if (!File.Exists(FilePath)) return 0;
+        var lines = File.ReadAllLines(FilePath);
+        var fields = (from field in typeof(T).GetFields()
+            join column in lines[0].Split(separator) on field.Name equals column
+            select field).ToArray();
+        var changed = 0;
+        for (var i = 1; i < lines.Length; i++)
+        {
+            var values = lines[i].Split(separator);
+            var entry = new T();
+            for (var j = 0; j < values.Length; j++)
+            {
+                var fieldValue = CSVHelper.ParseType(fields[j].FieldType, values[j]);
+                fields[j].SetValue(entry, fieldValue);
+            }
+            if (!predicate.Invoke(entry)) continue;
+            entry = mapper.Invoke(entry);
+            var row = GetRows([entry], new DatabaseWriteOptions(), 0, fields).Skip(1).ToArray();
+            lines[i] = string.Join(separator, row);
+            changed++;
+        }
+        if (changed > 0) File.WriteAllLines(FilePath, lines);
+        return changed;
     }
 
     public int Remove(Predicate<T> predicate)
@@ -60,7 +87,7 @@ public class CSVWriter<T>(string filePath, char separator = ',') : IDatabaseWrit
         return int.TryParse(idString, out var lastIndex) ? lastIndex : 0;
     }
     
-    private string[] GetValues(IEnumerable<T> content, DatabaseWriteOptions options, int offset, params FieldInfo[] fields)
+    private string[] GetRows(IEnumerable<T> content, DatabaseWriteOptions options, int offset, params FieldInfo[] fields)
     {
         var elements = content as T[] ?? content.ToArray();
         var contents = new string[elements.Length + 1];

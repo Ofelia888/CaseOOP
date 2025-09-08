@@ -24,6 +24,11 @@ public class Repository<T>(IDatabaseReader<T> reader, IDatabaseWriter<T> writer)
         writer.AddEntries(entries, options);
     }
 
+    public int Update(Predicate<T> predicate, Func<T, T> mapper)
+    {
+        return writer.Update(predicate, mapper);
+    }
+
     public int Remove(Predicate<T> predicate)
     {
         return writer.Remove(predicate);
