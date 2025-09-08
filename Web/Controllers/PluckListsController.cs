@@ -15,6 +15,7 @@ public class PluckListsController : Controller
         var json = await response.Content.ReadAsStringAsync();
         var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)?.Select(pluckList => new PluckList
         {
+            Id = pluckList.Id,
             Name = pluckList.Name,
             Shipment = pluckList.Shipment,
             Address = pluckList.Address

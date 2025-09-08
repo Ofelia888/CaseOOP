@@ -2,10 +2,10 @@
     ViewData["Title"] = "Plukliste behandling";
 }
 
-<p>Page <span id="page">@((int)ViewData["Page"]! + 1)</span> of @(ViewData["Pages"])</p>
+<p>Page <span id="page">@((int)ViewData["Page"]!)</span> of @(ViewData["Pages"])</p>
 
 <button>Quit</button>
-<button>Aflust</button>
+<button id="pluckListView_finish">Aflust</button>
 <button id="pluckListView_previous">Forrige</button>
 <button id="pluckListView_next">Næste</button>
 <button>Genindlæs</button>
@@ -47,6 +47,20 @@
                 data: { index: index - 2 }
             }).done(function (view) {
                 page.html(index - 1);
+                $("#pluckListView").html(view);
+                processing = false;
+            }).fail(function () {
+                processing = false;
+            })
+        })
+        $("#pluckListView_finish").click(function () {
+            if (processing) return;
+            processing = true;
+            $.ajax({
+                url: "/Home/FinishPluckList",
+                type: "PUT",
+                data: { id: $("#pluckList_id").html() }
+            }).done(function (view) {
                 $("#pluckListView").html(view);
                 processing = false;
             }).fail(function () {

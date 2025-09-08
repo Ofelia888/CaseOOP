@@ -111,9 +111,42 @@ public class Program
         {
             var entry = pluckListRepository.ReadEntry(pluckList => pluckList.Id.Equals(id));
             if (entry == null) return Results.NotFound();
-            var json = JsonConvert.SerializeObject(entry);
+            var items = pluckListItemsRepository.ReadEntries(pluckListItem => pluckListItem.Id.Equals(entry.Id))
+                .Select(pluckListItem =>
+                {
+                    var item = itemRepository.ReadEntry(item => item.ProductID.Equals(pluckListItem.ProductID));
+                    if (item == null) return null;
+                    return new Item
+                    {
+                        ProductID = pluckListItem.ProductID,
+                        Title = item.Title,
+                        Type = item.Type,
+                        Amount = pluckListItem.Amount
+                    };
+                }).Where(item => item != null).ToList();
+            var json = JsonConvert.SerializeObject(new FullPluckList()
+            {
+                Id = entry.Id,
+                Name = entry.Name,
+                Shipment = entry.Shipment,
+                Address = entry.Address,
+                Items = items!
+            });
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
+        });
+        pluckListGroup.MapPut("/{id:guid}", async (HttpContext context, Guid id) =>
+        {
+            var items = pluckListItemsRepository.ReadEntries(item => item.Id.Equals(id));
+            foreach (var reservedItem in items)
+            {
+                storageRepository.Update(item => item.ProductID.Equals(reservedItem.ProductID), item =>
+                {
+                    item.Amount -= reservedItem.Amount;
+                    return item;
+                });
+            }
+            return await Task.FromResult(Results.Ok());
         });
         pluckListGroup.MapPost("/create", (HttpContext context) =>
         {

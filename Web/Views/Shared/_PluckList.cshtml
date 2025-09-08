@@ -2,6 +2,10 @@
 @model Web.Models.PluckList
 
 <p>
+    <span class="col-2" style="display: inline-block">ID:</span>
+    <span id="pluckList_id">@Model.Id.ToString()</span>
+</p>
+<p>
     <span class="col-2" style="display: inline-block">Navn:</span>
     <span>@Model.Name</span>
 </p>
