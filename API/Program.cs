@@ -38,12 +38,18 @@ public class Program
         var itemsGroup = app.MapGroup("/items");
         itemsGroup.MapGet("/", async (HttpContext context) =>
         {
-            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries().Select(entry => new
+            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries().Select(entry =>
             {
-                entry.ProductID,
-                entry.Title,
-                entry.Type,
-                Amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0
+                var amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0;
+                var reserved = pluckListItemsRepository.ReadEntries(item => item.ProductID!.Equals(entry.ProductID)).Sum(item => item.Amount);
+                return new
+                {
+                    entry.ProductID,
+                    entry.Title,
+                    entry.Type,
+                    Amount = amount,
+                    Reserved = reserved
+                };
             }));
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
@@ -52,11 +58,14 @@ public class Program
         {
             var entry = itemRepository.ReadEntry(item => id.Equals(item.ProductID));
             if (entry == null) return Results.NotFound();
+            var amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0;
+            var reserved = pluckListItemsRepository.ReadEntries(item => item.ProductID!.Equals(entry.ProductID)).Sum(item => item.Amount);
             var json = JsonConvert.SerializeObject(new {
                 entry.ProductID,
                 entry.Title,
                 entry.Type,
-                Amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0
+                Amount = amount,
+                Reserved = reserved
             });
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
