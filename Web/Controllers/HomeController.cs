@@ -80,6 +80,35 @@ public class HomeController : Controller
         return await GetPluckList(index);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetJsonFormat(string id)
+    {
+        var httpClient = new HttpClient();
+        var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/plucklists"));
+        var json = await response.Content.ReadAsStringAsync();
+        var itemsResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/items"));
+        var items = JsonConvert.DeserializeObject<List<Item>>(await itemsResponse.Content.ReadAsStringAsync());
+        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)
+            ?.Where(pluckList => !pluckList.Archived).Select(pluckList => new PluckList()
+            {
+                Id = pluckList.Id,
+                Name = pluckList.Name,
+                Shipment = pluckList.Shipment,
+                Address = pluckList.Address,
+                Items = pluckList.Items.Select(item => new PluckListItem()
+                {
+                    ProductID = item.ProductID!,
+                    Title = item.Title!,
+                    Type = item.Type,
+                    Amount = item.Amount,
+                    Total = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Amount),
+                    Reserved = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Reserved)
+                }).ToList(),
+                Archived = pluckList.Archived
+            }).ToList() ?? [];
+        return new ContentResult() { Content = JsonConvert.SerializeObject(pluckLists.First(pluckList => pluckList.Id.ToString().Equals(id))), ContentType = "application/json" };
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
