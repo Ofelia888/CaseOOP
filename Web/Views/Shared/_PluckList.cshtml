@@ -1,6 +1,8 @@
 ﻿@using Core.Models
 @model Web.Models.PluckList
 
+@if (Model != null)
+{
 <p>
     <span class="col-2" style="display: inline-block">ID:</span>
     <span id="pluckList_id">@Model.Id.ToString()</span>
@@ -41,3 +43,4 @@
     }
     </tbody>
 </table>
+}

@@ -2,7 +2,7 @@
     ViewData["Title"] = "Plukliste behandling";
 }
 
-<p>Page <span id="page">@((int)ViewData["Page"]!)</span> of @(ViewData["Pages"])</p>
+<p>Page <span id="page">@((int)ViewData["Page"]!)</span> of <span id="pages">@(ViewData["Pages"])</span></p>
 
 <button>Quit</button>
 <button id="pluckListView_finish">Aflust</button>
@@ -19,9 +19,9 @@
         let processing = false;
         $("#pluckListView_next").click(function () {
             if (processing) return;
-            let page = $("#page");
-            let index = parseInt(page.html());
-            if (index >= @ViewData["Pages"]) return;
+            let page = $("#page"), index = parseInt(page.html());
+            let pages = $("#pages"), index_max = parseInt(pages.html());
+            if (index >= index_max) return;
             processing = true;
             $.ajax({
                 url: "/Home/GetPluckList",
@@ -37,8 +37,7 @@
         })
         $("#pluckListView_previous").click(function () {
             if (processing) return;
-            let page = $("#page");
-            let index = parseInt(page.html());
+            let page = $("#page"), index = parseInt(page.html());
             if (index <= 1) return;
             processing = true;
             $.ajax({
@@ -55,23 +54,30 @@
         })
         $("#pluckListView_finish").click(function () {
             if (processing) return;
+            let page = $("#page"), index = parseInt(page.html());
+            let pages = $("#pages"), index_max = parseInt(pages.html());
+            if (index_max < 1) return;
             processing = true;
             $.ajax({
                 url: "/Home/FinishPluckList",
                 type: "PUT",
-                data: { id: $("#pluckList_id").html() }
+                data: { id: $("#pluckList_id").html(), index: index - 1 }
             }).done(function (view) {
                 $("#pluckListView").html(view);
+                if (index === index_max) page.html(index - 1);
+                pages.html(index_max - 1);
                 processing = false;
             }).fail(function () {
                 processing = false;
             })
         })
-        let page = parseInt($("#page").html());
+        let index = parseInt($("#page").html());
+        let pages = parseInt($("#pages").html());
+        if (pages < 1) return;
         $.ajax({
             url: "/Home/GetPluckList",
             type: "GET",
-            data: { index: page - 1 }
+            data: { index: index - 1 }
         }).done(function (view) {
             $("#pluckListView").html(view);
         })

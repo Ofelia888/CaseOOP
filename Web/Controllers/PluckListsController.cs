@@ -18,8 +18,10 @@ public class PluckListsController : Controller
             Id = pluckList.Id,
             Name = pluckList.Name,
             Shipment = pluckList.Shipment,
-            Address = pluckList.Address
+            Address = pluckList.Address,
+            Archived = pluckList.Archived
         }).ToList() ?? [];
+        pluckLists.Sort((o1, o2) => o1.Archived.CompareTo(o2.Archived));
         ViewData["PluckLists"] = pluckLists;
         return View();
     }

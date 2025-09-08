@@ -7,4 +7,5 @@ public class PluckList
     public string Shipment;
     public string Address;
     public List<PluckListItem> Items;
+    public bool Archived;
 }
