@@ -3,6 +3,8 @@ using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Web.Models;
+using Item = Web.Models.Item;
+using PluckListItem = Web.Models.PluckListItem;
 
 namespace Web.Controllers;
 
@@ -14,8 +16,29 @@ public class HomeController : Controller
         var httpClient = new HttpClient();
         var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/plucklists"));
         var json = await response.Content.ReadAsStringAsync();
-        ViewData["Page"] = 0;
-        ViewData["Pages"] = JsonConvert.DeserializeObject<List<FullPluckList>>(json)?.Count ?? 0;
+        var itemsResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/items"));
+        var items = JsonConvert.DeserializeObject<List<Item>>(await itemsResponse.Content.ReadAsStringAsync());
+        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)
+            ?.Where(pluckList => !pluckList.Archived).Select(pluckList => new PluckList()
+            {
+                Id = pluckList.Id,
+                Name = pluckList.Name,
+                Shipment = pluckList.Shipment,
+                Address = pluckList.Address,
+                Items = pluckList.Items.Select(item => new PluckListItem()
+                {
+                    ProductID = item.ProductID!,
+                    Title = item.Title!,
+                    Type = item.Type,
+                    Amount = item.Amount,
+                    Total = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Amount),
+                    Reserved = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Reserved)
+                }).ToList(),
+                Archived = pluckList.Archived
+            }).ToList() ?? [];
+        ViewData["Page"] = pluckLists.Count > 0 ? 1 : 0;
+        ViewData["Pages"] = pluckLists.Count;
+        ViewData["PluckLists"] = pluckLists;
         return View();
     }
 
@@ -25,14 +48,65 @@ public class HomeController : Controller
         var httpClient = new HttpClient();
         var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/plucklists"));
         var json = await response.Content.ReadAsStringAsync();
-        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)?.Select(pluckList => new Pluklist()
-        {
-            Name = pluckList.Name,
-            Forsendelse = pluckList.Shipment,
-            Adresse = pluckList.Address,
-            Lines = pluckList.Items
-        }).ToList() ?? [];
-        return PartialView("_PluckList", pluckLists[index]);
+        var itemsResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/items"));
+        var items = JsonConvert.DeserializeObject<List<Item>>(await itemsResponse.Content.ReadAsStringAsync());
+        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)
+            ?.Where(pluckList => !pluckList.Archived).Select(pluckList => new PluckList()
+            {
+                Id = pluckList.Id,
+                Name = pluckList.Name,
+                Shipment = pluckList.Shipment,
+                Address = pluckList.Address,
+                Items = pluckList.Items.Select(item => new PluckListItem()
+                {
+                    ProductID = item.ProductID!,
+                    Title = item.Title!,
+                    Type = item.Type,
+                    Amount = item.Amount,
+                    Total = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Amount),
+                    Reserved = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Reserved)
+                }).ToList(),
+                Archived = pluckList.Archived
+            }).ToList() ?? [];
+        if (pluckLists.Count == 0) return PartialView("_PluckList", null);
+        return PartialView("_PluckList", index < pluckLists.Count ? pluckLists[index] : pluckLists.Last());
+    }
+
+    [HttpPut]
+    public async Task<PartialViewResult> FinishPluckList(string id, int index)
+    {
+        var httpClient = new HttpClient();
+        await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"http://localhost:5000/plucklists/{id}"));
+        return await GetPluckList(index);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetJsonFormat(string id)
+    {
+        var httpClient = new HttpClient();
+        var response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"http://localhost:5000/plucklists"));
+        var json = await response.Content.ReadAsStringAsync();
+        var itemsResponse = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000/items"));
+        var items = JsonConvert.DeserializeObject<List<Item>>(await itemsResponse.Content.ReadAsStringAsync());
+        var pluckLists = JsonConvert.DeserializeObject<List<FullPluckList>>(json)
+            ?.Where(pluckList => !pluckList.Archived).Select(pluckList => new PluckList()
+            {
+                Id = pluckList.Id,
+                Name = pluckList.Name,
+                Shipment = pluckList.Shipment,
+                Address = pluckList.Address,
+                Items = pluckList.Items.Select(item => new PluckListItem()
+                {
+                    ProductID = item.ProductID!,
+                    Title = item.Title!,
+                    Type = item.Type,
+                    Amount = item.Amount,
+                    Total = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Amount),
+                    Reserved = items!.Where(i => i.ProductID.Equals(item.ProductID)).Sum(i => i.Reserved)
+                }).ToList(),
+                Archived = pluckList.Archived
+            }).ToList() ?? [];
+        return new ContentResult() { Content = JsonConvert.SerializeObject(pluckLists.First(pluckList => pluckList.Id.ToString().Equals(id))), ContentType = "application/json" };
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

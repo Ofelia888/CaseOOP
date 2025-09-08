@@ -2,14 +2,18 @@
     ViewData["Title"] = "Plukliste behandling";
 }
 
-<p>Page <span id="page">@((int)ViewData["Page"]! + 1)</span> of @(ViewData["Pages"])</p>
+<p>Page <span id="page">@((int)ViewData["Page"]!)</span> of <span id="pages">@(ViewData["Pages"])</span></p>
 
-<button>Quit</button>
-<button>Aflust</button>
+<!--<button>Quit</button>-->
+<button id="pluckListView_finish">Aflust</button>
+<button id="pluckListView_previous">Forrige</button>
 <button id="pluckListView_next">Næste</button>
+<button id="pluckListView_json">Download</button>
+<!--
 <button>Genindlæs</button>
 <button>Åbn print</button>
 <button>Scan varer</button>
+-->
 
 <div class="mt-3 p-2" style="border: 1px solid #888;" id="pluckListView"></div>
 
@@ -18,9 +22,9 @@
         let processing = false;
         $("#pluckListView_next").click(function () {
             if (processing) return;
-            let page = $("#page");
-            let index = parseInt(page.html());
-            if (index >= @ViewData["Pages"]) return;
+            let page = $("#page"), index = parseInt(page.html());
+            let pages = $("#pages"), index_max = parseInt(pages.html());
+            if (index >= index_max) return;
             processing = true;
             $.ajax({
                 url: "/Home/GetPluckList",
@@ -34,11 +38,70 @@
                 processing = false;
             })
         })
-        let page = parseInt($("#page").html());
+        $("#pluckListView_previous").click(function () {
+            if (processing) return;
+            let page = $("#page"), index = parseInt(page.html());
+            if (index <= 1) return;
+            processing = true;
+            $.ajax({
+                url: "/Home/GetPluckList",
+                type: "GET",
+                data: { index: index - 2 }
+            }).done(function (view) {
+                page.html(index - 1);
+                $("#pluckListView").html(view);
+                processing = false;
+            }).fail(function () {
+                processing = false;
+            })
+        })
+        $("#pluckListView_finish").click(function () {
+            if (processing) return;
+            let page = $("#page"), index = parseInt(page.html());
+            let pages = $("#pages"), index_max = parseInt(pages.html());
+            if (index_max < 1) return;
+            processing = true;
+            $.ajax({
+                url: "/Home/FinishPluckList",
+                type: "PUT",
+                data: { id: $("#pluckList_id").html(), index: index - 1 }
+            }).done(function (view) {
+                $("#pluckListView").html(view);
+                if (index === index_max) page.html(index - 1);
+                pages.html(index_max - 1);
+                processing = false;
+            }).fail(function () {
+                processing = false;
+            })
+        })
+        $("#pluckListView_json").click(function () {
+            if (processing) return;
+            processing = true;
+            $.ajax({
+                url: "/Home/GetJsonFormat",
+                type: "GET",
+                data: { id: $("#pluckList_id").html() }
+            }).done(function (view) {
+                let data = 'data:application/json,' + encodeURIComponent(JSON.stringify(view));
+                let link = document.createElement('a');
+                link.setAttribute('href', data);
+                link.setAttribute('target', '_blank');
+                link.setAttribute('download', $("#pluckList_id").html() + '.json');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                processing = false;
+            }).fail(function () {
+                processing = false;
+            })
+        })
+        let index = parseInt($("#page").html());
+        let pages = parseInt($("#pages").html());
+        if (pages < 1) return;
         $.ajax({
             url: "/Home/GetPluckList",
             type: "GET",
-            data: { index: page - 1 }
+            data: { index: index - 1 }
         }).done(function (view) {
             $("#pluckListView").html(view);
         })

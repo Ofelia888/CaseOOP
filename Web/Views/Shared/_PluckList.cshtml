@@ -1,17 +1,23 @@
 ﻿@using Core.Models
-@model Core.Models.Pluklist
+@model Web.Models.PluckList
 
+@if (Model != null)
+{
+<p>
+    <span class="col-2" style="display: inline-block">ID:</span>
+    <span id="pluckList_id">@Model.Id.ToString()</span>
+</p>
 <p>
     <span class="col-2" style="display: inline-block">Navn:</span>
     <span>@Model.Name</span>
 </p>
 <p>
     <span class="col-2" style="display: inline-block">Forsendelse:</span>
-    <span>@Model.Forsendelse</span>
+    <span>@Model.Shipment</span>
 </p>
 <p>
     <span class="col-2" style="display: inline-block">Adresse:</span>
-    <span>@Model.Adresse</span>
+    <span>@Model.Address</span>
 </p>
 <hr/>
 <table class="table table-striped w-full">
@@ -25,11 +31,11 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Lines)
+    @foreach (var item in Model.Items)
     {
         <tr>
             <td>@item.Amount</td>
-            <td>True</td> <!-- TODO -->
+            <td>@(item.Total - item.Reserved)</td>
             <td>@Enum.GetName(typeof(ItemType), item.Type)</td>
             <td>@item.ProductID</td>
             <td>@item.Title</td>
@@ -37,3 +43,4 @@
     }
     </tbody>
 </table>
+}

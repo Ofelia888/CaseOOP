@@ -1,20 +1,20 @@
-Id;Name;Shipment;Address
-19c36a0c-86ac-4cc1-ace7-cadd13cfc2f0;Peter Thomsen;Post Nord;Middelfartvej 16, 5400 Bogense
-724d5d24-a723-4265-93b2-05c571546566;Jørgen Jensen;Post Nord;Faaborgvej 82, 5400 Bogense
-0aa780fa-4a1d-4e04-8cd1-21fb2b1ee72f;Thomas Thomsen;Post Nord;Faaborgvej 83, 5000 Odense C
-81339f28-d64d-4039-ba8b-cd23721bd08d;Jens Thomsen;GLS;Nyborgvej 43, 5600 Faaborg
-f43f4f8e-354e-4462-813e-f478383a9732;Thomas Jørgensen;GLS;Faaborgvej 5, 5500 Middelfart
-5422baf2-1c03-4c99-a2aa-e8a5666b25c1;Jørgen Thomsen;GLS;Bogensevej 70, 5700 Svendborg
-73d97722-ffb6-4112-a2e0-8c2fbc90f292;Peter Hansen;DAO;Bogensevej 24, 5500 Middelfart
-c27c77e9-b636-4515-a94a-1b0c8f0f283a;Peter Jørgensen;Post Nord;Odensevej 97, 5300 Kerteminde
-78db37c7-5b9c-4df8-8c54-bfdd0567053f;Thomas Hansen;DAO;Kertemindevej 93, 5500 Middelfart
-8af7a698-4b89-4996-9059-896f743eece2;Jørgen Jensen;GLS;Svendborgvej 42, 5600 Faaborg
-93bae06a-86c1-456e-acfb-3e9f9787b62c;Jørgen Hansen;GLS;Kertemindevej 66, 5400 Bogense
-7d18623d-44bc-40f7-a5de-61e8a32700e3;Peter Jørgensen;Post Nord;Svendborgvej 10, 5700 Svendborg
-28e2a754-2ee5-45f0-b884-0c88e0b746c9;Jens Jensen;DAO;Faaborgvej 99, 5500 Middelfart
-365a8b29-8d04-4a28-9af6-14bdf2eef480;Jørgen Hansen;Post Nord;Odensevej 78, 5500 Middelfart
-8d4f3b3d-7773-461f-bee4-77a8f5b76147;Jens Jørgensen;GLS;Odensevej 46, 5000 Odense C
-dba31b3e-abff-4957-b16f-496af79c3812;Jørgen Jørgensen;DAO;Odensevej 74, 5700 Svendborg
-2a580fe0-8431-4d0a-b10d-c03933f72efb;Peter Jensen;DAO;Bogensevej 6, 5400 Bogense
-3521bb23-937c-407d-90d9-93c074adb24e;Jørgen Jensen;Post Nord;Middelfartvej 88, 5700 Svendborg
-0e801923-4ea3-4caf-8f96-7baea0b48b99;Hans Jensen;GLS;Svendborgvej 55, 5600 Faaborg
+Id;Name;Shipment;Address;Archived
+19c36a0c-86ac-4cc1-ace7-cadd13cfc2f0;Peter Thomsen;Post Nord;Middelfartvej 16, 5400 Bogense;False
+724d5d24-a723-4265-93b2-05c571546566;Jørgen Jensen;Post Nord;Faaborgvej 82, 5400 Bogense;False
+0aa780fa-4a1d-4e04-8cd1-21fb2b1ee72f;Thomas Thomsen;Post Nord;Faaborgvej 83, 5000 Odense C;False
+81339f28-d64d-4039-ba8b-cd23721bd08d;Jens Thomsen;GLS;Nyborgvej 43, 5600 Faaborg;False
+f43f4f8e-354e-4462-813e-f478383a9732;Thomas Jørgensen;GLS;Faaborgvej 5, 5500 Middelfart;False
+5422baf2-1c03-4c99-a2aa-e8a5666b25c1;Jørgen Thomsen;GLS;Bogensevej 70, 5700 Svendborg;False
+73d97722-ffb6-4112-a2e0-8c2fbc90f292;Peter Hansen;DAO;Bogensevej 24, 5500 Middelfart;False
+c27c77e9-b636-4515-a94a-1b0c8f0f283a;Peter Jørgensen;Post Nord;Odensevej 97, 5300 Kerteminde;False
+78db37c7-5b9c-4df8-8c54-bfdd0567053f;Thomas Hansen;DAO;Kertemindevej 93, 5500 Middelfart;False
+8af7a698-4b89-4996-9059-896f743eece2;Jørgen Jensen;GLS;Svendborgvej 42, 5600 Faaborg;False
+93bae06a-86c1-456e-acfb-3e9f9787b62c;Jørgen Hansen;GLS;Kertemindevej 66, 5400 Bogense;False
+7d18623d-44bc-40f7-a5de-61e8a32700e3;Peter Jørgensen;Post Nord;Svendborgvej 10, 5700 Svendborg;False
+28e2a754-2ee5-45f0-b884-0c88e0b746c9;Jens Jensen;DAO;Faaborgvej 99, 5500 Middelfart;False
+365a8b29-8d04-4a28-9af6-14bdf2eef480;Jørgen Hansen;Post Nord;Odensevej 78, 5500 Middelfart;False
+8d4f3b3d-7773-461f-bee4-77a8f5b76147;Jens Jørgensen;GLS;Odensevej 46, 5000 Odense C;False
+dba31b3e-abff-4957-b16f-496af79c3812;Jørgen Jørgensen;DAO;Odensevej 74, 5700 Svendborg;False
+2a580fe0-8431-4d0a-b10d-c03933f72efb;Peter Jensen;DAO;Bogensevej 6, 5400 Bogense;False
+3521bb23-937c-407d-90d9-93c074adb24e;Jørgen Jensen;Post Nord;Middelfartvej 88, 5700 Svendborg;False
+0e801923-4ea3-4caf-8f96-7baea0b48b99;Hans Jensen;GLS;Svendborgvej 55, 5600 Faaborg;False

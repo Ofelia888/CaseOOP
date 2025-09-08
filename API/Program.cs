@@ -29,25 +29,6 @@ public class Program
 
         app.UseAuthorization();
 
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                        new WeatherForecast
-                        {
-                            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                            TemperatureC = Random.Shared.Next(-20, 55),
-                            Summary = summaries[Random.Shared.Next(summaries.Length)]
-                        })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast");
-
         var itemRepository = new CSVRepository<BaseItem>("items.csv");
         var pluckListRepository = new CSVRepository<BasePluckList>("plucklists.csv", ';');
         var storageRepository = new CSVRepository<StorageItem>("storage.csv");
@@ -57,12 +38,23 @@ public class Program
         var itemsGroup = app.MapGroup("/items");
         itemsGroup.MapGet("/", async (HttpContext context) =>
         {
-            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries().Select(entry => new
+            var json = JsonConvert.SerializeObject(itemRepository.ReadEntries().Select(entry =>
             {
-                entry.ProductID,
-                entry.Title,
-                entry.Type,
-                Amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0
+                var amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0;
+                var reserved = pluckListItemsRepository.ReadEntries(item => item.ProductID!.Equals(entry.ProductID))
+                    .Where(item =>
+                    {
+                        var pluckList = pluckListRepository.ReadEntry(list => list.Id.Equals(item.Id));
+                        return !pluckList!.Archived;
+                    }).Sum(item => item.Amount);
+                return new
+                {
+                    entry.ProductID,
+                    entry.Title,
+                    entry.Type,
+                    Amount = amount,
+                    Reserved = reserved
+                };
             }));
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
@@ -71,11 +63,14 @@ public class Program
         {
             var entry = itemRepository.ReadEntry(item => id.Equals(item.ProductID));
             if (entry == null) return Results.NotFound();
+            var amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0;
+            var reserved = pluckListItemsRepository.ReadEntries(item => item.ProductID!.Equals(entry.ProductID)).Sum(item => item.Amount);
             var json = JsonConvert.SerializeObject(new {
                 entry.ProductID,
                 entry.Title,
                 entry.Type,
-                Amount = storageRepository.ReadEntry(item => item.ProductID.Equals(entry.ProductID))?.Amount ?? 0
+                Amount = amount,
+                Reserved = reserved
             });
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
@@ -110,7 +105,8 @@ public class Program
                         Name = pluckList.Name,
                         Shipment = pluckList.Shipment,
                         Address = pluckList.Address,
-                        Items = items!
+                        Items = items!,
+                        Archived = pluckList.Archived
                     };
                 }).ToArray();
             var json = JsonConvert.SerializeObject(pluckLists);
@@ -121,9 +117,51 @@ public class Program
         {
             var entry = pluckListRepository.ReadEntry(pluckList => pluckList.Id.Equals(id));
             if (entry == null) return Results.NotFound();
-            var json = JsonConvert.SerializeObject(entry);
+            var items = pluckListItemsRepository.ReadEntries(pluckListItem => pluckListItem.Id.Equals(entry.Id))
+                .Select(pluckListItem =>
+                {
+                    var item = itemRepository.ReadEntry(item => item.ProductID.Equals(pluckListItem.ProductID));
+                    if (item == null) return null;
+                    return new Item
+                    {
+                        ProductID = pluckListItem.ProductID,
+                        Title = item.Title,
+                        Type = item.Type,
+                        Amount = pluckListItem.Amount
+                    };
+                }).Where(item => item != null).ToList();
+            var json = JsonConvert.SerializeObject(new FullPluckList()
+            {
+                Id = entry.Id,
+                Name = entry.Name,
+                Shipment = entry.Shipment,
+                Address = entry.Address,
+                Items = items!,
+                Archived = entry.Archived
+            });
             var result = Results.Bytes(Encoding.UTF8.GetBytes(json), "application/json");
             return await Task.FromResult(result);
+        });
+        pluckListGroup.MapPut("/{id:guid}", async (HttpContext context, Guid id) =>
+        {
+            var entry = pluckListRepository.ReadEntry(pluckList => pluckList.Id.Equals(id));
+            if (entry == null) return Results.NotFound();
+            if (entry.Archived) return Results.BadRequest();
+            var items = pluckListItemsRepository.ReadEntries(item => item.Id.Equals(id));
+            foreach (var reservedItem in items)
+            {
+                storageRepository.Update(item => item.ProductID.Equals(reservedItem.ProductID), item =>
+                {
+                    item.Amount -= reservedItem.Amount;
+                    return item;
+                });
+            }
+            pluckListRepository.Update(pluckList => pluckList.Id.Equals(id), pluckList =>
+            {
+                pluckList.Archived = true;
+                return pluckList;
+            });
+            return await Task.FromResult(Results.Ok());
         });
         pluckListGroup.MapPost("/create", (HttpContext context) =>
         {
